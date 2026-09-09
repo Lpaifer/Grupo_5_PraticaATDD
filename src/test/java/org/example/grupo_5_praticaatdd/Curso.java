@@ -22,6 +22,5 @@ public class CursoTest {
         // ASSERT
         assertEquals(nomeEsperado, nomeObtido);
         assertEquals(cargaHorariaEsperada, cargaHorariaObtida);
-
     }
 }
