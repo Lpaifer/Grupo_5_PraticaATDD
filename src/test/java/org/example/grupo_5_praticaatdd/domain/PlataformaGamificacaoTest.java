@@ -6,18 +6,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class PlataformaGamificacaoTest {
 
-@Test 
-void DeveLiberarTresCursosQuandoAlunoConcluirComMediaNove() {
+@Test
+public void deveLiberarTresCursosQuandoMediaForExatamente7() {
     var plataforma = new PlataformaGamificacao();
+    var aluno = new Aluno("João", Plano.Basico);
+    var curso = new Curso("Curso 1");
+    var conclusao = new ConclusaoCurso(aluno, curso, 7.0, true);
 
-    var aluno = new Aluno("Lucas Paifer", Plano.Basico);
-    var curso1 = new Curso("Java");
-
-    aluno.concluirCurso(curso1; 9.0);
-
-    plataforma.processarConclusao(aluno, curso1);
+    plataforma.processarConclusao(conclusao);
 
     assertEquals(3, aluno.getCursoAdicionaisLiberados());
 }
+
 
 }
