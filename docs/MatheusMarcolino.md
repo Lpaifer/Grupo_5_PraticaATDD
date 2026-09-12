@@ -41,7 +41,7 @@ expected: <3> but was: <0>
 BUILD FAILURE
 ```
 
-![RED-Matheus](docs/evidencias/MatheusMarcolinoRED.jpeg)
+![RED-Matheus](evidencias/MatheusMarcolinoRED.jpeg)
 
 ### 🟢 GREEN
 
@@ -58,7 +58,7 @@ Tests run: 1, Failures: 0, Errors: 0
 BUILD SUCCESS
 ```
 
-![GREEN-Matheus](docs/evidencias/MatheusMarcolinoGREEN.jpeg)
+![GREEN-Matheus](evidencias/MatheusMarcolinoGREEN.jpeg)
 
 ### 📊 JaCoCo após o GREEN
 
@@ -70,7 +70,7 @@ return concluido && this.media >= 7.0;
 
 A linha ficou amarela, indicando que nem todos os caminhos da condição estavam cobertos.
 
-![AntesBlue-Matheus](docs/evidencias/MatheusMarcolino_AntesDoBlue.jpeg)
+![AntesBlue-Matheus](evidencias/MatheusMarcolino_AntesDoBlue.jpeg)
 
 ### 🔵 BLUE
 
@@ -96,13 +96,13 @@ public void naoDeveLiberarCursosQuandoCursoNaoFoiConcluido() {
 
 Os testes continuaram passando e o novo cenário cobriu o caminho que estava faltando na condição `concluido && this.media >= 7.0`.
 
-![Blue-Matheus](docs/evidencias/MatheusMarcolinoBLUE.jpeg)
+![Blue-Matheus](evidencias/MatheusMarcolinoBLUE.jpeg)
 
 ### 📊 JaCoCo final
 
 Após o BLUE, o método `foiAprovado()` passou a apresentar **100% de cobertura de instruções e 100% de cobertura de branches**, deixando a condição totalmente coberta.
 
-![JacocoBlue-Matheus](docs/evidencias/MatheusMarcolino_JacocoBLUE.jpeg)
+![JacocoBlue-Matheus](evidencias/MatheusMarcolino_JacocoBLUE.jpeg)
 
 ### Commits
 
