@@ -17,6 +17,20 @@ public void deveLiberarTresCursosQuandoMediaForExatamente7() {
 
     assertEquals(3, aluno.getCursoAdicionaisLiberados());
 }
+@Test
+public void naoDeveLiberarCursosQuandoMediaForMenorQue7() {
 
+    var plataforma = new PlataformaGamificacao();
+
+    var aluno = new Aluno("Matheus Marcolino", Plano.Basico);
+
+    var curso = new Curso("Curso 1");
+
+    var conclusao = new ConclusaoCurso(aluno, curso, 6.5, true);
+
+    plataforma.processarConclusao(conclusao);
+
+    assertEquals(0, aluno.getCursoAdicionaisLiberados());
+}
 
 }
