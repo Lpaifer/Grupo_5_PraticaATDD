@@ -1,19 +1,6 @@
-# Grupo 5 - Prática ATDD
+# Leonardo Godinho da Silva - ATDD
 
-## Educação Continuada Gamificada
-
-Projeto desenvolvido para a disciplina de DevOps & QA utilizando os conceitos de Acceptance Test Driven Development (ATDD), combinando BDD e TDD.
-
-## Integrantes
-
-- Beatriz Canaveze Fontolan Soares - 235099
-- Leonardo Godinho da Silva - 236764
-- Lucas Paifer - 236576
-- Matheus Nicolas Arizono Ywamoto - 235912
-- Matheus Marcolino - 161109
-- Rafael Amorim - 223380
-
-## BDD - Leonardo Godinho da Silva
+## BDD
 
 ### Cenário: Acúmulo de cursos adicionais após segunda aprovação
 
@@ -23,7 +10,9 @@ Projeto desenvolvido para a disciplina de DevOps & QA utilizando os conceitos de
 **ENTÃO** o aluno deve receber mais 3 cursos adicionais  
 **E** deve totalizar 6 cursos adicionais liberados.
 
-## TDD - Leonardo Godinho da Silva
+---
+
+## TDD
 
 ### RED
 
@@ -43,7 +32,9 @@ BUILD FAILURE
 
 ### Evidência RED
 
-![RED - Leonardo](docs/evidencias/Leonardo_RED.jpeg)
+![RED - Leonardo](evidencias/Leonardo_RED.jpeg)
+
+---
 
 ### GREEN
 
@@ -66,7 +57,9 @@ BUILD SUCCESS
 
 ### Evidência GREEN
 
-![GREEN - Leonardo](docs/evidencias/Leonardo_GREEN.jpeg)
+![GREEN - Leonardo](evidencias/Leonardo_GREEN.jpeg)
+
+---
 
 ## Cobertura de Testes - JaCoCo
 
@@ -76,11 +69,13 @@ No pacote `domain`, foi obtida cobertura de **81% das instruções**.
 
 A classe `PlataformaGamificacao` atingiu **100% de cobertura de instruções**.
 
-Os cenários ainda não cobertos estão relacionados a outras regras de negócio que serão implementadas pelos demais integrantes do grupo. 
+Os cenários ainda não cobertos estão relacionados às demais regras de negócio e BDDs do projeto.
 
 ### Evidência JaCoCo
 
-![JaCoCo - Leonardo](docs/evidencias/Leonardo_JACOCO.jpeg)
+![JaCoCo - Leonardo](evidencias/Leonardo_JACOCO.jpeg)
+
+---
 
 ## BLUE - Refatoração
 
@@ -94,7 +89,7 @@ Foi criada a constante:
 private static final double MEDIA_MINIMA_APROVACAO = 7.0;
 ```
 
-E a validação passou a utilizar:
+A validação passou a utilizar:
 
 ```java
 public boolean foiAprovado() {
@@ -123,3 +118,14 @@ Tests run: 3, Failures: 0, Errors: 0, Skipped: 0
 BUILD SUCCESS
 ```
 
+### Evidência BLUE
+
+![BLUE - Leonardo](evidencias/Leonardo_BLUE.jpeg)
+
+---
+
+## Commits
+
+- `249f4f1` - GREEN - implementar acumulo de cursos adicionais
+- `ef0a1be` - BLUE - refatorar nomenclatura e regra de aprovacao
+- `6cd29cf` - BLUE - corrigir nomenclatura do getter de cursos adicionais
