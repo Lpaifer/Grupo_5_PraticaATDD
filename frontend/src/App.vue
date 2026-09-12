@@ -77,9 +77,9 @@
 
       nomeAluno.value = ''
       planoAluno.value = 'Básico'
-    } catch (e) {
+    } catch (error) {
       erroAluno.value =
-        'Backend indisponível. Não foi possível cadastrar o aluno.'
+        `Não foi possível cadastrar o aluno. ${error.message}`
     }
   }
 
@@ -99,9 +99,9 @@
       cursos.value.push(cursoCriado)
 
       nomeCurso.value = ''
-    } catch (e) {
+    } catch (error) {
       erroCurso.value =
-        'Backend indisponível. Não foi possível cadastrar o curso.'
+        `Não foi possível cadastrar o curso. ${error.message}`
     }
   }
     
@@ -156,13 +156,13 @@
         if (indiceAluno !== -1) {
           alunos.value[indiceAluno] = alunoAtualizado
         }
-      } catch (e) {
+      } catch (error) {
         erroConclusao.value =
-          'Conclusão processada, mas não foi possível atualizar o histórico do aluno.'
+          `Conclusão processada, mas não foi possível atualizar o histórico do aluno. ${error.message}`
       }
-    } catch (e) {
+    } catch (error) {
       erroConclusao.value =
-        'Backend indisponível. Não foi possível processar a conclusão.'
+        `Não foi possível processar a conclusão. ${error.message}`
     }
   }
 
@@ -175,9 +175,9 @@
 
       alunos.value = alunosCadastrados
       cursos.value = cursosCadastrados
-    } catch (e) {
+    } catch (error) {
       erroCarregamento.value =
-        'Backend indisponível. Não foi possível carregar os dados iniciais.'
+        `Não foi possível carregar os dados iniciais. ${error.message}`
     }
   })
 

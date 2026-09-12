@@ -11,9 +11,9 @@ async function apiRequest(endpoint, options = {}) {
       },
       ...options,
     })
-  } catch (error) {
-    throw new Error('Backend indisponível')
-  }
+    } catch (error) {
+    throw new Error('Backend indisponível', { cause: error })
+    }
 
   if (!response.ok) {
     throw new Error(`Erro na API: ${response.status}`)
@@ -21,9 +21,9 @@ async function apiRequest(endpoint, options = {}) {
 
   try {
     return await response.json()
-  } catch (error) {
-    throw new Error('Resposta inválida do backend')
-  }
+    } catch (error) {
+    throw new Error('Resposta inválida do backend', { cause: error })
+    }
 }
 
 async function criarAluno(aluno) {
