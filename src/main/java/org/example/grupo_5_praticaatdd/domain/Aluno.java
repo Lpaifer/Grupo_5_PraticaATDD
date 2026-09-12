@@ -23,7 +23,7 @@ public class Aluno {
         return plano;
     }
 
-    public int getCursoAdicionaisLiberados() {
+    public int getCursosAdicionaisLiberados() {
         return cursosAdicionaisLiberados;
     }
 }

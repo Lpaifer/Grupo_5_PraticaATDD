@@ -15,7 +15,7 @@ public class PlataformaGamificacaoTest {
 
         plataforma.processarConclusao(conclusao);
 
-        assertEquals(3, aluno.getCursoAdicionaisLiberados());
+        assertEquals(3, aluno.getCursosAdicionaisLiberados());
     }
 
     @Test
@@ -39,6 +39,6 @@ public class PlataformaGamificacaoTest {
         plataforma.processarConclusao(segundaConclusao);
 
         // ASSERT
-        assertEquals(6, aluno.getCursoAdicionaisLiberados());
+        assertEquals(6, aluno.getCursosAdicionaisLiberados());
     }
 }
