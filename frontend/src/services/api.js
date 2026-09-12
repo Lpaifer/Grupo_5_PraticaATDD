@@ -45,10 +45,20 @@ async function buscarAluno(id) {
   return apiRequest(`/api/alunos/${id}`)
 }
 
+async function listarAlunos() {
+  return apiRequest('/api/alunos')
+}
+
+async function listarCursos() {
+  return apiRequest('/api/cursos')
+}
+
 export {
   API_URL,
   criarAluno,
   criarCurso,
   processarConclusao,
   buscarAluno,
+  listarAlunos,
+  listarCursos,
 }

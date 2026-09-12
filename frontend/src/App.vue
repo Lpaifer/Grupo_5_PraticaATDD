@@ -23,8 +23,12 @@
   const resultado = ref(null)
 
   const historicoPorCurso = computed(() => {
+    if (!resultado.value) {
+      return {}
+    }
+
     const aluno = alunos.value.find(
-      aluno => aluno.id === alunoSelecionado.value
+      aluno => aluno.id === resultado.value.alunoId
     )
 
     if (!aluno || !aluno.historico) {
@@ -120,15 +124,19 @@
     }
 
     try {
-      const resposta = await processarConclusaoApi({
-        alunoId: aluno.id,
-        cursoId: curso.id,
-        nota: notaNumerica,
-        concluido: concluido.value,
-      })
+  const resposta = await processarConclusaoApi({
+    alunoId: aluno.id,
+    cursoId: curso.id,
+    nota: notaNumerica,
+    concluido: concluido.value,
+  })
 
-      resultado.value = resposta
+  resultado.value = resposta
 
+  nota.value = ''
+  concluido.value = false
+
+  try {
       const alunoAtualizado = await buscarAluno(aluno.id)
 
       const indiceAluno = alunos.value.findIndex(
@@ -138,13 +146,14 @@
       if (indiceAluno !== -1) {
         alunos.value[indiceAluno] = alunoAtualizado
       }
-
-      nota.value = ''
-      concluido.value = false
     } catch (e) {
       erro.value =
-        'Backend indisponível. Não foi possível processar a conclusão.'
+        'Conclusão processada, mas não foi possível atualizar o histórico do aluno.'
     }
+  } catch (e) {
+    erro.value =
+      'Backend indisponível. Não foi possível processar a conclusão.'
+  }
   }
 
 </script>
