@@ -1,19 +1,23 @@
 const API_URL = 'http://localhost:8080'
 
 async function apiRequest(endpoint, options = {}) {
-  const response = await fetch(`${API_URL}${endpoint}`, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-    ...options,
-  })
+  try {
+    const response = await fetch(`${API_URL}${endpoint}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+      ...options,
+    })
 
-  if (!response.ok) {
-    throw new Error(`Erro na API: ${response.status}`)
+    if (!response.ok) {
+      throw new Error(`Erro na API: ${response.status}`)
+    }
+
+    return await response.json()
+  } catch (error) {
+    throw new Error('Backend indisponível')
   }
-
-  return response.json()
 }
 
 async function criarAluno(aluno) {

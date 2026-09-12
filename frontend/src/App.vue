@@ -1,6 +1,13 @@
 <script setup>
   import { ref, computed } from 'vue'
 
+  import {
+    criarAluno,
+    criarCurso,
+    processarConclusao as processarConclusaoApi,
+    buscarAluno,
+  } from './services/api'
+
   const nomeAluno = ref('')
   const planoAluno = ref('Básico')
   const alunos = ref([])
@@ -12,49 +19,15 @@
   const nota = ref('')
   const concluido = ref(false)
 
-  function cadastrarAluno() {
-    if (!nomeAluno.value.trim()) {
-      return
-    }
-
-    alunos.value.push({
-      id: Date.now(),
-      nome: nomeAluno.value,
-      plano: planoAluno.value,
-      cursosAdicionais: 0,
-      historico: [],
-    })
-
-    nomeAluno.value = ''
-    planoAluno.value = 'Básico'
-  }
-
-  function cadastrarCurso() {
-    if (!nomeCurso.value.trim()) {
-      return
-    }
-
-    cursos.value.push({
-      id: Date.now(),
-      nome: nomeCurso.value,
-    })
-
-    nomeCurso.value = ''
-  }
-
   const erro = ref('')
   const resultado = ref(null)
 
   const historicoPorCurso = computed(() => {
-    if (!resultado.value) {
-      return {}
-    }
-
     const aluno = alunos.value.find(
-      (aluno) => aluno.id === resultado.value.alunoId,
+      aluno => aluno.id === alunoSelecionado.value
     )
 
-    if (!aluno) {
+    if (!aluno || !aluno.historico) {
       return {}
     }
 
@@ -71,16 +44,63 @@
       return grupos
     }, {})
   })
-  
-  function processarConclusao() {
+
+  async function cadastrarAluno() {
     erro.value = ''
+
+    if (!nomeAluno.value.trim()) {
+      erro.value = 'Informe o nome do aluno.'
+      return
+    }
+
+    try {
+      const alunoCriado = await criarAluno({
+        nome: nomeAluno.value.trim(),
+        plano: planoAluno.value,
+      })
+
+      alunos.value.push({
+        ...alunoCriado,
+        historico: alunoCriado.historico ?? [],
+      })
+
+      nomeAluno.value = ''
+      planoAluno.value = 'Básico'
+    } catch (e) {
+      erro.value = 'Backend indisponível. Não foi possível cadastrar o aluno.'
+    }
+  }
+
+  async function cadastrarCurso() {
+    erro.value = ''
+
+    if (!nomeCurso.value.trim()) {
+      erro.value = 'Informe o nome do curso.'
+      return
+    }
+
+    try {
+      const cursoCriado = await criarCurso({
+        nome: nomeCurso.value.trim(),
+      })
+
+      cursos.value.push(cursoCriado)
+
+      nomeCurso.value = ''
+    } catch (e) {
+      erro.value = 'Backend indisponível. Não foi possível cadastrar o curso.'
+    }
+  }
     
+  async function processarConclusao() {
+    erro.value = ''
+
     const aluno = alunos.value.find(
-      (aluno) => aluno.id === alunoSelecionado.value,
+      aluno => aluno.id === alunoSelecionado.value
     )
 
     const curso = cursos.value.find(
-      (curso) => curso.id === cursoSelecionado.value,
+      curso => curso.id === cursoSelecionado.value
     )
 
     if (!aluno || !curso || nota.value === '') {
@@ -90,37 +110,41 @@
 
     const notaNumerica = Number(nota.value)
 
-    if (notaNumerica < 0 || notaNumerica > 10) {
+    if (
+      !Number.isFinite(notaNumerica) ||
+      notaNumerica < 0 ||
+      notaNumerica > 10
+    ) {
       erro.value = 'A nota deve estar entre 0 e 10.'
       return
     }
 
-    const aprovado = concluido.value && notaNumerica >= 7
+    try {
+      const resposta = await processarConclusaoApi({
+        alunoId: aluno.id,
+        cursoId: curso.id,
+        nota: notaNumerica,
+        concluido: concluido.value,
+      })
 
-    if (aprovado) {
-      aluno.cursosAdicionais += 3
+      resultado.value = resposta
+
+      const alunoAtualizado = await buscarAluno(aluno.id)
+
+      const indiceAluno = alunos.value.findIndex(
+        item => item.id === aluno.id
+      )
+
+      if (indiceAluno !== -1) {
+        alunos.value[indiceAluno] = alunoAtualizado
+      }
+
+      nota.value = ''
+      concluido.value = false
+    } catch (e) {
+      erro.value =
+        'Backend indisponível. Não foi possível processar a conclusão.'
     }
-
-    aluno.historico.push({
-      cursoId: curso.id,
-      curso: curso.nome,
-      nota: notaNumerica,
-      concluido: concluido.value,
-      aprovado,
-    })
-
-    resultado.value = {
-      alunoId: aluno.id,
-      aluno: aluno.nome,
-      curso: curso.nome,
-      nota: notaNumerica,
-      concluido: concluido.value,
-      aprovado,
-      cursosAdicionais: aluno.cursosAdicionais,
-    }
-
-    nota.value = ''
-    concluido.value = false
   }
 
 </script>
