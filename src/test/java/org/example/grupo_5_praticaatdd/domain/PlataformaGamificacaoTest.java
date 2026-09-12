@@ -32,5 +32,19 @@ public void naoDeveLiberarCursosQuandoMediaForMenorQue7() {
 
     assertEquals(0, aluno.getCursoAdicionaisLiberados());
 }
+@Test
+public void naoDeveLiberarCursosQuandoCursoNaoFoiConcluido() {
 
+    var plataforma = new PlataformaGamificacao();
+
+    var aluno = new Aluno("Matheus Marcolino", Plano.Basico);
+
+    var curso = new Curso("Curso 1");
+
+    var conclusao = new ConclusaoCurso(aluno, curso, 7.0, false);
+
+    plataforma.processarConclusao(conclusao);
+
+    assertEquals(0, aluno.getCursoAdicionaisLiberados());
+}
 }
