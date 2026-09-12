@@ -1,22 +1,28 @@
 const API_URL = 'http://localhost:8080'
 
 async function apiRequest(endpoint, options = {}) {
+  let response
+
   try {
-    const response = await fetch(`${API_URL}${endpoint}`, {
+    response = await fetch(`${API_URL}${endpoint}`, {
       headers: {
         'Content-Type': 'application/json',
         ...options.headers,
       },
       ...options,
     })
-
-    if (!response.ok) {
-      throw new Error(`Erro na API: ${response.status}`)
-    }
-
-    return await response.json()
   } catch (error) {
     throw new Error('Backend indisponível')
+  }
+
+  if (!response.ok) {
+    throw new Error(`Erro na API: ${response.status}`)
+  }
+
+  try {
+    return await response.json()
+  } catch (error) {
+    throw new Error('Resposta inválida do backend')
   }
 }
 

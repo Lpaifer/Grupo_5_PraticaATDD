@@ -1,11 +1,13 @@
 <script setup>
-  import { ref, computed } from 'vue'
+  import { ref, computed, onMounted } from 'vue'
 
   import {
     criarAluno,
     criarCurso,
     processarConclusao as processarConclusaoApi,
     buscarAluno,
+    listarAlunos,
+    listarCursos,
   } from './services/api'
 
   const nomeAluno = ref('')
@@ -19,7 +21,11 @@
   const nota = ref('')
   const concluido = ref(false)
 
-  const erro = ref('')
+  const erroAluno = ref('')
+  const erroCurso = ref('')
+  const erroConclusao = ref('')
+  const erroCarregamento = ref('')
+
   const resultado = ref(null)
 
   const historicoPorCurso = computed(() => {
@@ -38,6 +44,7 @@
     return aluno.historico.reduce((grupos, item) => {
       if (!grupos[item.cursoId]) {
         grupos[item.cursoId] = {
+          cursoId: item.cursoId,
           curso: item.curso,
           tentativas: [],
         }
@@ -50,10 +57,10 @@
   })
 
   async function cadastrarAluno() {
-    erro.value = ''
+    erroAluno.value = ''
 
     if (!nomeAluno.value.trim()) {
-      erro.value = 'Informe o nome do aluno.'
+      erroAluno.value = 'Informe o nome do aluno.'
       return
     }
 
@@ -71,15 +78,16 @@
       nomeAluno.value = ''
       planoAluno.value = 'Básico'
     } catch (e) {
-      erro.value = 'Backend indisponível. Não foi possível cadastrar o aluno.'
+      erroAluno.value =
+        'Backend indisponível. Não foi possível cadastrar o aluno.'
     }
   }
 
   async function cadastrarCurso() {
-    erro.value = ''
+    erroCurso.value = ''
 
     if (!nomeCurso.value.trim()) {
-      erro.value = 'Informe o nome do curso.'
+      erroCurso.value = 'Informe o nome do curso.'
       return
     }
 
@@ -92,12 +100,13 @@
 
       nomeCurso.value = ''
     } catch (e) {
-      erro.value = 'Backend indisponível. Não foi possível cadastrar o curso.'
+      erroCurso.value =
+        'Backend indisponível. Não foi possível cadastrar o curso.'
     }
   }
     
   async function processarConclusao() {
-    erro.value = ''
+    erroConclusao.value = ''
 
     const aluno = alunos.value.find(
       aluno => aluno.id === alunoSelecionado.value
@@ -108,7 +117,8 @@
     )
 
     if (!aluno || !curso || nota.value === '') {
-      erro.value = 'Preencha aluno, curso e nota antes de processar.'
+      erroConclusao.value =
+        'Preencha aluno, curso e nota antes de processar.'
       return
     }
 
@@ -119,42 +129,57 @@
       notaNumerica < 0 ||
       notaNumerica > 10
     ) {
-      erro.value = 'A nota deve estar entre 0 e 10.'
+      erroConclusao.value = 'A nota deve estar entre 0 e 10.'
       return
     }
 
     try {
-  const resposta = await processarConclusaoApi({
-    alunoId: aluno.id,
-    cursoId: curso.id,
-    nota: notaNumerica,
-    concluido: concluido.value,
-  })
+      const resposta = await processarConclusaoApi({
+        alunoId: aluno.id,
+        cursoId: curso.id,
+        nota: notaNumerica,
+        concluido: concluido.value,
+      })
 
-  resultado.value = resposta
+      resultado.value = resposta
 
-  nota.value = ''
-  concluido.value = false
+      nota.value = ''
+      concluido.value = false
 
-  try {
-      const alunoAtualizado = await buscarAluno(aluno.id)
+      try {
+        const alunoAtualizado = await buscarAluno(aluno.id)
 
-      const indiceAluno = alunos.value.findIndex(
-        item => item.id === aluno.id
-      )
+        const indiceAluno = alunos.value.findIndex(
+          item => item.id === aluno.id
+        )
 
-      if (indiceAluno !== -1) {
-        alunos.value[indiceAluno] = alunoAtualizado
+        if (indiceAluno !== -1) {
+          alunos.value[indiceAluno] = alunoAtualizado
+        }
+      } catch (e) {
+        erroConclusao.value =
+          'Conclusão processada, mas não foi possível atualizar o histórico do aluno.'
       }
     } catch (e) {
-      erro.value =
-        'Conclusão processada, mas não foi possível atualizar o histórico do aluno.'
+      erroConclusao.value =
+        'Backend indisponível. Não foi possível processar a conclusão.'
     }
-  } catch (e) {
-    erro.value =
-      'Backend indisponível. Não foi possível processar a conclusão.'
   }
-  }
+
+  onMounted(async () => {
+    try {
+      const [alunosCadastrados, cursosCadastrados] = await Promise.all([
+        listarAlunos(),
+        listarCursos(),
+      ])
+
+      alunos.value = alunosCadastrados
+      cursos.value = cursosCadastrados
+    } catch (e) {
+      erroCarregamento.value =
+        'Backend indisponível. Não foi possível carregar os dados iniciais.'
+    }
+  })
 
 </script>
 
@@ -171,6 +196,9 @@
     </div>
   </header>
   <main>
+    <p v-if="erroCarregamento" class="mensagem-erro">
+      {{ erroCarregamento }}
+    </p>
 
     <section>
       <h2>Cadastrar Aluno</h2>
@@ -193,6 +221,10 @@
           </select>
         </div>
       </div>
+      
+      <p v-if="erroAluno" class="mensagem-erro">
+        {{ erroAluno }}
+      </p>
 
       <button @click="cadastrarAluno">
         Cadastrar Aluno
@@ -218,6 +250,9 @@
         type="text"
         placeholder="Digite o nome do curso"
       />
+      <p v-if="erroCurso" class="mensagem-erro">
+        {{ erroCurso }}
+      </p>
 
       <button @click="cadastrarCurso">
         Cadastrar Curso
@@ -287,8 +322,8 @@
         Curso concluído
       </label>
       
-      <p v-if="erro" class="mensagem-erro">
-        {{ erro }}
+      <p v-if="erroConclusao" class="mensagem-erro">
+        {{ erroConclusao }}
       </p>
 
       <button @click="processarConclusao">
@@ -323,14 +358,14 @@
         <div class="historico-cursos">
           <div
             v-for="grupo in historicoPorCurso"
-            :key="grupo.curso"
+            :key="grupo.cursoId"
             class="curso-historico"
           >
             <h4>{{ grupo.curso }}</h4>
 
             <div
-              v-for="item in grupo.tentativas"
-              :key="`${item.cursoId}-${item.nota}-${item.concluido}`"
+              v-for="(item, index) in grupo.tentativas"
+              :key="`${grupo.cursoId}-${index}`"
               class="historico-item"
             >
               <span>
@@ -345,7 +380,7 @@
               </span>
 
               <span>
-                {{ item.aprovado ? '+3 cursos' : '+0 cursos' }}
+                {{ item.concluido ? 'Curso concluído' : 'Curso não concluído' }}
               </span>
             </div>
           </div>

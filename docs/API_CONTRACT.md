@@ -127,14 +127,14 @@ GET /api/alunos/1
     {
       "cursoId": 10,
       "curso": "Geologia",
-      "nota": 5.0,
+      "nota": 8.0,
       "concluido": true,
-      "aprovado": false
+      "aprovado": true
     },
     {
-      "cursoId": 10,
-      "curso": "Geologia",
-      "nota": 8.0,
+      "cursoId": 11,
+      "curso": "Física",
+      "nota": 7.5,
       "concluido": true,
       "aprovado": true
     }
@@ -168,15 +168,15 @@ GET /api/alunos
         "nota": 8.0,
         "concluido": true,
         "aprovado": true
+      },
+      {
+        "cursoId": 11,
+        "curso": "Física",
+        "nota": 7.5,
+        "concluido": true,
+        "aprovado": true
       }
     ]
-  },
-  {
-    "id": 2,
-    "nome": "Matheus",
-    "plano": "Premium",
-    "cursosAdicionais": 0,
-    "historico": []
   }
 ]
 ```
@@ -212,7 +212,7 @@ Esse endpoint será utilizado pelo frontend ao abrir a página para carregar os 
 
 ---
 
-# Regras esperadas pelo frontend
+# Regras de negócio esperadas do backend
 
 - A nota deve estar entre 0 e 10.
 - O curso precisa estar concluído para que o aluno possa ser aprovado.
