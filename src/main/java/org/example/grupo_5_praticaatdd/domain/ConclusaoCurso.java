@@ -1,6 +1,9 @@
 package org.example.grupo_5_praticaatdd.domain;
 
 public class ConclusaoCurso {
+
+    private static final double MEDIA_MINIMA_APROVACAO = 7.0;
+    
     private Aluno aluno;
     private Curso curso;
     private double media;
@@ -19,7 +22,7 @@ public class ConclusaoCurso {
     }
 
     public boolean foiAprovado() {
-        return concluido && this.media >= 7.0;
+        return concluido && media >= MEDIA_MINIMA_APROVACAO;
     }
 
     public Aluno getAluno() {
