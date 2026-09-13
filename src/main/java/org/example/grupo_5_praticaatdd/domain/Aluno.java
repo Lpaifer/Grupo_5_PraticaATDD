@@ -6,9 +6,13 @@ public class Aluno {
     private int cursosAdicionaisLiberados;
 
     public Aluno(String nome, Plano plano) {
+        this(nome, plano, 0);
+    }
+
+    public Aluno(String nome, Plano plano, int cursosAdicionaisLiberados) {
         this.nome = nome;
         this.plano = plano;
-        this.cursosAdicionaisLiberados = 0;
+        this.cursosAdicionaisLiberados = cursosAdicionaisLiberados;
     }
 
     public void liberarCursos(int quantidade) {

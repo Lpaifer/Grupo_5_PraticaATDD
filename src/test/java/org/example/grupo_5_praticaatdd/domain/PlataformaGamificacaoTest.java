@@ -3,8 +3,27 @@ package org.example.grupo_5_praticaatdd.domain;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PlataformaGamificacaoTest {
+
+    @Test
+    void processamentoPreservaDadosOriginaisDaConclusao() {
+        var aluno = new Aluno("Ana", Plano.Basico);
+        var curso = new Curso("Fundamentos de Java");
+        var conclusao = new ConclusaoCurso(aluno, curso, 7.0, true);
+
+        new PlataformaGamificacao().processarConclusao(conclusao);
+
+        assertEquals("Ana", aluno.getNome());
+        assertEquals(Plano.Basico, aluno.getPlano());
+        assertSame(curso, conclusao.getCurso());
+        assertEquals("Fundamentos de Java", curso.getNome());
+        assertEquals(7.0, conclusao.getMedia());
+        assertTrue(conclusao.isConcluido());
+        assertEquals(3, aluno.getCursosAdicionaisLiberados());
+    }
 
     @Test
     public void deveLiberarTresCursosAoRefazerCursoEObterMedia8() {
@@ -14,46 +33,44 @@ public class PlataformaGamificacaoTest {
 
         var primeiraConclusao = new ConclusaoCurso(aluno, curso, 3.0, true);
         plataforma.processarConclusao(primeiraConclusao);
-        assertEquals(0, aluno.getCursoAdicionaisLiberados());
+        assertEquals(0, aluno.getCursosAdicionaisLiberados());
 
         var novaConclusao = new ConclusaoCurso(aluno, curso, 8.0, true);
         plataforma.processarConclusao(novaConclusao);
 
-    assertEquals(3, aluno.getCursoAdicionaisLiberados());
-}
-@Test
-public void naoDeveLiberarCursosQuandoMediaForMenorQue7() {
+        assertEquals(3, aluno.getCursosAdicionaisLiberados());
+    }
+    @Test
+    public void naoDeveLiberarCursosQuandoMediaForMenorQue7() {
 
-    var plataforma = new PlataformaGamificacao();
+        var plataforma = new PlataformaGamificacao();
 
-    var aluno = new Aluno("Matheus Marcolino", Plano.Basico);
+        var aluno = new Aluno("Matheus Marcolino", Plano.Basico);
 
-    var curso = new Curso("Curso 1");
+        var curso = new Curso("Curso 1");
 
-    var conclusao = new ConclusaoCurso(aluno, curso, 6.5, true);
+        var conclusao = new ConclusaoCurso(aluno, curso, 6.5, true);
 
-    plataforma.processarConclusao(conclusao);
+        plataforma.processarConclusao(conclusao);
 
-    assertEquals(0, aluno.getCursoAdicionaisLiberados());
-}
-@Test
-public void naoDeveLiberarCursosQuandoCursoNaoFoiConcluido() {
+        assertEquals(0, aluno.getCursosAdicionaisLiberados());
+    }
 
-    var plataforma = new PlataformaGamificacao();
+    @Test
+    public void naoDeveLiberarCursosQuandoCursoNaoFoiConcluido() {
 
-    var aluno = new Aluno("Matheus Marcolino", Plano.Basico);
-assertEquals(0, aluno.getCursoAdicionaisLiberados());
+        var plataforma = new PlataformaGamificacao();
 
-    var curso = new Curso("Curso 1");
+        var aluno = new Aluno("Matheus Marcolino", Plano.Basico);
+        assertEquals(0, aluno.getCursosAdicionaisLiberados());
 
-    var conclusao = new ConclusaoCurso(aluno, curso, 7.0, false);
+        var curso = new Curso("Curso 1");
 
-    plataforma.processarConclusao(conclusao);
+        var conclusao = new ConclusaoCurso(aluno, curso, 7.0, false);
 
-    assertEquals(0, aluno.getCursoAdicionaisLiberados());
-}
-}
-        assertEquals(3, aluno.getCursoAdicionaisLiberados());
+        plataforma.processarConclusao(conclusao);
+
+        assertEquals(0, aluno.getCursosAdicionaisLiberados());
     }
   
     @Test
@@ -65,7 +82,7 @@ assertEquals(0, aluno.getCursoAdicionaisLiberados());
 
     plataforma.processarConclusao(conclusao);
 
-    assertEquals(0, aluno.getCursoAdicionaisLiberados());
+    assertEquals(0, aluno.getCursosAdicionaisLiberados());
 
 
     }

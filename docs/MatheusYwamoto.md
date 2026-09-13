@@ -33,7 +33,7 @@ BUILD FAILURE
 
 ### Evidência RED
 
-![RED - Matheus Arizono](evidencias/MatheusArizono_RED.png)
+![RED - Matheus Arizono](evidencias/matheusarizono_RED.jpeg)
 
 ---
 
@@ -53,13 +53,13 @@ public void deveLiberarTresCursosAoRefazerCursoEObterMedia8() {
     // primeira tentativa: reprovado (média < 7,0) -> nada é liberado
     var primeiraConclusao = new ConclusaoCurso(aluno, curso, 3.0, true);
     plataforma.processarConclusao(primeiraConclusao);
-    assertEquals(0, aluno.getCursoAdicionaisLiberados());
+    assertEquals(0, aluno.getCursosAdicionaisLiberados());
 
     // aluno refaz o mesmo curso e obtém média 8,0
     var novaConclusao = new ConclusaoCurso(aluno, curso, 8.0, true);
     plataforma.processarConclusao(novaConclusao);
 
-    assertEquals(3, aluno.getCursoAdicionaisLiberados());
+    assertEquals(3, aluno.getCursosAdicionaisLiberados());
 }
 ```
 
@@ -72,9 +72,7 @@ BUILD SUCCESS
 
 ### Evidência GREEN
 
-![GREEN - Matheus Arizono](evidencias/MatheusArizono_GREEN.png)
-
-![Terminal - Matheus Arizono](evidencias/MatheusArizono_TERMINAL.png)
+![GREEN - Matheus Arizono](evidencias/matheusarizono_GREEN.jpeg)
 
 ---
 
@@ -100,7 +98,7 @@ As instruções não cobertas no pacote `domain` correspondem a getters ainda n�
 
 ### Evidência JaCoCo
 
-![JaCoCo - Matheus Arizono](evidencias/MatheusArizono_JACOCO.png)
+![JaCoCo - Matheus Arizono](evidencias/matheusarizono_JACOCO.jpeg)
 
 ---
 
@@ -131,10 +129,15 @@ Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
 BUILD SUCCESS
 ```
 
+### Evidência BLUE
+
+![BLUE - Matheus Arizono](evidencias/matheusarizono_BLUE.jpeg)
+
 ---
 
-## Commits
+## Commits relacionados
 
-- `<hash>` - RED - criar teste de liberacao de cursos ao refazer curso reprovado
-- `<hash>` - GREEN - processar nova conclusao do curso refeito
-- `<hash>` - JACOCO - adicionar plugin de cobertura ao pom.xml
+- `3735baa` — alterações em `PlataformaGamificacaoTest.java` por Matheus Arizono.
+- `13117f4` — documentação e imagens RED, GREEN, JaCoCo e BLUE por Matheus Arizono.
+
+As etapas RED e GREEN estão registradas nas imagens desta página; não há commits separados identificados para cada etapa.

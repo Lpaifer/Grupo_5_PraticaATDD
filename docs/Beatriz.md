@@ -35,6 +35,8 @@ Esse resultado demonstrou que o comportamento observado não correspondia ao val
 
 Evidência RED
 
+![RED - Beatriz Canaveze](evidencias/BeatrizCanaveze_RED.jpeg.jpeg)
+
 GREEN
 
 Para adequar o teste ao comportamento definido pelo cenário BDD, o valor esperado foi alterado de 3 para 0.
@@ -51,6 +53,8 @@ Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
 BUILD SUCCESS
 Evidência GREEN
 
+![GREEN - Beatriz Canaveze](evidencias/BeatrizCanaveze_GREEN.jpeg)
+
 Cobertura de Testes - JaCoCo
 
 Após a etapa GREEN, foi executado o JaCoCo para analisar a cobertura dos testes.
@@ -65,6 +69,8 @@ Os resultados indicam que parte das instruções e dos caminhos condicionais ain
 
 Evidência JaCoCo
 
+![JaCoCo - Beatriz Canaveze](evidencias/BeatrizCanaveze_JACOCO.jpeg)
+
 BLUE - Refatoração
 
 Não foram realizadas refatorações após a etapa GREEN.
@@ -76,6 +82,8 @@ Após essa etapa, os testes foram executados novamente e permaneceram passando c
 Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
 BUILD SUCCESS
 Evidência BLUE
+
+![BLUE - Beatriz Canaveze](evidencias/BeatrizCanaveze_BLUE.jpeg.jpeg)
 
 Commits
 
