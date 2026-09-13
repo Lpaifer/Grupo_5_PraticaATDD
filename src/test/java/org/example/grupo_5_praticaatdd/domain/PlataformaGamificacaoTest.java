@@ -6,14 +6,18 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class PlataformaGamificacaoTest {
 
-@Test
-public void naoDeveLiberarCursosEnquantoCursoNaoForConcluido() {
-var plataforma = new PlataformaGamificacao();
-var aluno = new Aluno("Beatriz Canaveze", Plano.Basico);
-var curso = new Curso("Curso em andamento");
-var conclusao = new ConclusaoCurso(aluno, curso, 0.0, false);
+    @Test
+    public void deveLiberarTresCursosAoRefazerCursoEObterMedia8() {
+        var plataforma = new PlataformaGamificacao();
+        var aluno = new Aluno("Matheus Arizono", Plano.Basico);
+        var curso = new Curso("Curso 1");
 
-plataforma.processarConclusao(conclusao);
+        var primeiraConclusao = new ConclusaoCurso(aluno, curso, 3.0, true);
+        plataforma.processarConclusao(primeiraConclusao);
+        assertEquals(0, aluno.getCursoAdicionaisLiberados());
+
+        var novaConclusao = new ConclusaoCurso(aluno, curso, 8.0, true);
+        plataforma.processarConclusao(novaConclusao);
 
     assertEquals(3, aluno.getCursoAdicionaisLiberados());
 }
@@ -49,6 +53,23 @@ assertEquals(0, aluno.getCursoAdicionaisLiberados());
     assertEquals(0, aluno.getCursoAdicionaisLiberados());
 }
 }
+        assertEquals(3, aluno.getCursoAdicionaisLiberados());
+    }
+  
+    @Test
+    public void naoDeveLiberarCursosEnquantoCursoNaoForConcluido() {
+    var plataforma = new PlataformaGamificacao();
+    var aluno = new Aluno("Beatriz Canaveze", Plano.Basico);
+    var curso = new Curso("Curso em andamento");
+    var conclusao = new ConclusaoCurso(aluno, curso, 0.0, false);
+
+    plataforma.processarConclusao(conclusao);
+
+    assertEquals(0, aluno.getCursoAdicionaisLiberados());
+
+
+    }
+  
     @Test
     public void deveLiberarTresCursosQuandoMediaForExatamente7() {
         var plataforma = new PlataformaGamificacao();
