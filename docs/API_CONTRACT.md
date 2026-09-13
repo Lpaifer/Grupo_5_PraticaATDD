@@ -1,6 +1,8 @@
 # Contrato da API - Frontend Vue
 
-## Base URL
+## Endereços
+
+O frontend usa caminhos relativos `/api/...`: o Vite os encaminha ao backend no desenvolvimento e o Nginx faz o mesmo no Docker. Para chamar o backend diretamente, use:
 
 ```text
 http://localhost:8080
@@ -181,7 +183,7 @@ GET /api/alunos
 ]
 ```
 
-Esse endpoint será utilizado pelo frontend ao abrir a página para carregar os alunos já cadastrados no backend.
+Esse endpoint é utilizado pelo frontend ao abrir a página para carregar os alunos já cadastrados no backend.
 
 ---
 
@@ -208,7 +210,7 @@ GET /api/cursos
 ]
 ```
 
-Esse endpoint será utilizado pelo frontend ao abrir a página para carregar os cursos já cadastrados no backend.
+Esse endpoint é utilizado pelo frontend ao abrir a página para carregar os cursos já cadastrados no backend.
 
 ---
 
@@ -228,7 +230,7 @@ Esse endpoint será utilizado pelo frontend ao abrir a página para carregar os 
 
 # Integração esperada no frontend
 
-O frontend Vue consumirá os endpoints através do arquivo:
+O frontend Vue consome os endpoints através do arquivo:
 
 ```text
 frontend/src/services/api.js
@@ -348,7 +350,7 @@ Isso evita que os cadastros desapareçam visualmente após atualizar a página.
 
 # Tratamento de erros
 
-O frontend deverá tratar falhas nas requisições à API.
+O frontend trata falhas nas requisições à API.
 
 Exemplos:
 

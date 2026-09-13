@@ -1,44 +1,20 @@
-# frontend
+﻿# Frontend — Educação Continuada Gamificada
 
-This template should help get you started developing with Vue 3 in Vite.
+Interface Vue para cadastrar alunos e cursos, processar conclusões e consultar o histórico. A documentação geral e os critérios ATDD ficam no [README principal](../README.md).
 
-## Recommended IDE Setup
+## Desenvolvimento local
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
-
-## Recommended Browser Setup
-
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
+Com o backend disponível na porta 8080:
 
 ```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
+npm ci
 npm run dev
 ```
 
-### Compile and Minify for Production
+Abra o endereço informado pelo Vite. As chamadas `/api` são encaminhadas para o backend pelo proxy de desenvolvimento.
 
-```sh
-npm run build
-```
+## Aplicação completa no Docker
 
-### Lint with [ESLint](https://eslint.org/)
+Na raiz do projeto, execute `docker compose up --build -d`. O frontend compilado fica em <http://localhost:5173/>; o Nginx encaminha `/api` para o backend dentro da rede Docker.
 
-```sh
-npm run lint
-```
+Para verificar o build isoladamente, execute `npm run build`.
