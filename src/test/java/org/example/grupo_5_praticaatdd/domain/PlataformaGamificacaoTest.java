@@ -19,6 +19,40 @@ public class PlataformaGamificacaoTest {
         var novaConclusao = new ConclusaoCurso(aluno, curso, 8.0, true);
         plataforma.processarConclusao(novaConclusao);
 
+    assertEquals(3, aluno.getCursoAdicionaisLiberados());
+}
+@Test
+public void naoDeveLiberarCursosQuandoMediaForMenorQue7() {
+
+    var plataforma = new PlataformaGamificacao();
+
+    var aluno = new Aluno("Matheus Marcolino", Plano.Basico);
+
+    var curso = new Curso("Curso 1");
+
+    var conclusao = new ConclusaoCurso(aluno, curso, 6.5, true);
+
+    plataforma.processarConclusao(conclusao);
+
+    assertEquals(0, aluno.getCursoAdicionaisLiberados());
+}
+@Test
+public void naoDeveLiberarCursosQuandoCursoNaoFoiConcluido() {
+
+    var plataforma = new PlataformaGamificacao();
+
+    var aluno = new Aluno("Matheus Marcolino", Plano.Basico);
+assertEquals(0, aluno.getCursoAdicionaisLiberados());
+
+    var curso = new Curso("Curso 1");
+
+    var conclusao = new ConclusaoCurso(aluno, curso, 7.0, false);
+
+    plataforma.processarConclusao(conclusao);
+
+    assertEquals(0, aluno.getCursoAdicionaisLiberados());
+}
+}
         assertEquals(3, aluno.getCursoAdicionaisLiberados());
     }
   
