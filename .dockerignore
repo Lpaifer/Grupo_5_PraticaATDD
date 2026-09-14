@@ -1,0 +1,8 @@
+.git
+.vscode
+.env
+target
+frontend
+docs
+*.md
+mvnw.cmd
