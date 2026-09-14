@@ -100,6 +100,18 @@ public class PlataformaGamificacaoTest {
     }
 
     @Test
+    public void deveLiberarTresCursosQuandoAlunoConcluirComMedia9() {
+        var plataforma = new PlataformaGamificacao();
+        var aluno = new Aluno("Rafael Amorim", Plano.Basico);
+        var curso = new Curso("Curso 1");
+        var conclusao = new ConclusaoCurso(aluno, curso, 9.0, true);
+
+        plataforma.processarConclusao(conclusao);
+
+        assertEquals(3, aluno.getCursosAdicionaisLiberados());
+    }
+
+    @Test
     void deveAcumularSeisCursosAposSegundaAprovacao() {
 
         // ARRANGE
