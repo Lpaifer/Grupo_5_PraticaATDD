@@ -48,7 +48,7 @@ Para desenvolver o frontend fora do Docker, execute `npm ci` e `npm run dev` den
 
 ## Verificação atual
 
-Em 13/09/2026, `./mvnw clean verify` passou com **19 testes**. O JaCoCo registrou **100% das instruções (729/729)**, **100% dos branches (11/11)** e **100% das linhas (168/168)** nas 25 classes analisadas. A classe `Grupo5PraticaAtddApplication` é excluída do relatório porque contém apenas o método `main` de inicialização, sem regra de negócio; a inicialização da aplicação é verificada nos testes de contexto e na execução Docker. A fase `verify` falha se surgir qualquer instrução, branch ou linha sem cobertura nas classes analisadas. O relatório detalhado é gerado localmente em `target/site/jacoco/index.html`. As porcentagens nos documentos individuais retratam etapas anteriores do ciclo RED/GREEN/BLUE. [Capturas do JUnit e Maven](docs/Testes.md) e [evidência da cobertura atual](docs/Cobertura-atual.md).
+Em 14/09/2026, `./mvnw clean verify` passou com **20 testes**. O JaCoCo registrou **100% das instruções (729/729)**, **100% dos branches (11/11)** e **100% das linhas (168/168)** nas 25 classes analisadas. A classe `Grupo5PraticaAtddApplication` é excluída do relatório porque contém apenas o método `main` de inicialização, sem regra de negócio; a inicialização da aplicação é verificada nos testes de contexto e na execução Docker. A fase `verify` falha se surgir qualquer instrução, branch ou linha sem cobertura nas classes analisadas. O relatório detalhado é gerado localmente em `target/site/jacoco/index.html`. As porcentagens nos documentos individuais retratam etapas anteriores do ciclo RED/GREEN/BLUE. [Capturas do JUnit e Maven](docs/Testes.md) e [evidência da cobertura atual](docs/Cobertura-atual.md).
 
 ## Integrantes
 
@@ -66,6 +66,7 @@ Em 13/09/2026, `./mvnw clean verify` passou com **19 testes**. O JaCoCo registro
 - [Lucas Paifer](docs/Lucas%20Paifer.md)
 - [Matheus Nicolas Arizono Ywamoto](docs/MatheusYwamoto.md)
 - [Matheus Marcolino](docs/MatheusMarcolino.md)
+- [Rafael Amorim](docs/Rafael.md)
 
 ## Cenários BDD identificados
 
@@ -80,4 +81,4 @@ As [propostas de histórias de usuário e a rastreabilidade US → BDD → teste
 | Lucas Paifer | [Liberar três cursos com média exatamente 7,0](docs/Lucas%20Paifer.md) |
 | Matheus Nicolas Arizono Ywamoto | [Liberar cursos após refazer um curso reprovado](docs/MatheusYwamoto.md) |
 | Matheus Marcolino | [Não liberar cursos com média abaixo de 7,0](docs/MatheusMarcolino.md) |
-| Rafael Amorim | Cenário individual ainda não localizado no repositório |
+| Rafael Amorim | [Liberar três cursos com média 9,0](docs/Rafael.md) |
