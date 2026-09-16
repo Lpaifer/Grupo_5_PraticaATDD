@@ -1,13 +1,13 @@
 # Evidência — cobertura JaCoCo atual
 
-Verificação em 13/09/2026:
+Verificação em 14/09/2026:
 
 ```sh
 ./mvnw clean verify
 ```
 
 ```text
-Tests run: 19, Failures: 0, Errors: 0, Skipped: 0
+Tests run: 20, Failures: 0, Errors: 0, Skipped: 0
 All coverage checks have been met.
 BUILD SUCCESS
 ```
@@ -24,4 +24,4 @@ O relatório `target/site/jacoco/index.html` e o CSV `target/site/jacoco/jacoco.
 
 A classe `Grupo5PraticaAtddApplication` foi excluída do relatório por conter somente o método `main` que inicializa o Spring Boot, sem regra de negócio. As demais classes permanecem incluídas. O plugin JaCoCo executa `check` na fase `verify` e falha o build se alguma instrução, branch ou linha dessas classes ficar sem cobertura.
 
-A imagem acima foi capturada do relatório gerado pelo Maven em 13/09/2026. Para reproduzi-la, execute o comando acima e abra `target/site/jacoco/index.html` no navegador. O diretório `target/` é ignorado pelo Git; esta página e a captura preservam o resultado e o comando de reprodução.
+A imagem acima foi capturada do relatório gerado pelo Maven em 13/09/2026. Após o cenário do Rafael, a execução textual de 14/09/2026 passou com 20 testes e manteve as mesmas métricas de cobertura, pois nenhuma classe de produção foi alterada. Para reproduzir o relatório atualizado, execute o comando acima e abra `target/site/jacoco/index.html` no navegador. O diretório `target/` é ignorado pelo Git; esta página preserva o resultado e o comando de reprodução.
