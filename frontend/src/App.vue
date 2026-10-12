@@ -208,6 +208,7 @@
           <label>Nome</label>
           <input
             v-model="nomeAluno"
+            data-cy="nome-aluno"
             type="text"
             placeholder="Digite o nome do aluno"
           />
@@ -215,18 +216,18 @@
 
         <div>
           <label>Plano</label>
-          <select v-model="planoAluno">
+          <select v-model="planoAluno" data-cy="plano-aluno">
             <option>Básico</option>
             <option>Premium</option>
           </select>
         </div>
       </div>
       
-      <p v-if="erroAluno" class="mensagem-erro">
+      <p v-if="erroAluno" class="mensagem-erro" data-cy="erro-aluno">
         {{ erroAluno }}
       </p>
 
-      <button @click="cadastrarAluno">
+      <button @click="cadastrarAluno" data-cy="cadastrar-aluno">
         Cadastrar Aluno
       </button>
 
@@ -247,6 +248,7 @@
       <label>Nome do Curso</label>
       <input
         v-model="nomeCurso"
+        data-cy="nome-curso"
         type="text"
         placeholder="Digite o nome do curso"
       />
@@ -254,7 +256,7 @@
         {{ erroCurso }}
       </p>
 
-      <button @click="cadastrarCurso">
+      <button @click="cadastrarCurso" data-cy="cadastrar-curso">
         Cadastrar Curso
       </button>
       <div v-if="cursos.length > 0">
@@ -274,7 +276,7 @@
       <div class="form-grid">
         <div>
           <label>Aluno</label>
-          <select v-model="alunoSelecionado">
+          <select v-model="alunoSelecionado" data-cy="selecionar-aluno">
             <option disabled value="">Selecione um aluno</option>
 
             <option
@@ -289,7 +291,7 @@
 
         <div>
           <label>Curso</label>
-          <select v-model="cursoSelecionado">
+          <select v-model="cursoSelecionado" data-cy="selecionar-curso">
             <option disabled value="">Selecione um curso</option>
 
             <option
@@ -306,6 +308,7 @@
           <label>Nota</label>
           <input
             v-model="nota"
+            data-cy="nota"
             type="number"
             min="0"
             max="10"
@@ -317,16 +320,17 @@
       <label>
         <input
           v-model="concluido"
+          data-cy="concluido"
           type="checkbox"
         />
         Curso concluído
       </label>
       
-      <p v-if="erroConclusao" class="mensagem-erro">
+      <p v-if="erroConclusao" class="mensagem-erro" data-cy="erro-conclusao">
         {{ erroConclusao }}
       </p>
 
-      <button @click="processarConclusao">
+      <button @click="processarConclusao" data-cy="processar-conclusao">
         Processar Conclusão
       </button>
     </section>
@@ -334,7 +338,7 @@
     <section>
       <h2>Resultado</h2>
 
-      <div v-if="resultado" class="resultado-card">
+      <div v-if="resultado" class="resultado-card" data-cy="resultado">
         <div class="resultado-grid">
           <p><strong>Aluno:</strong> {{ resultado.aluno }}</p>
           <p><strong>Curso:</strong> {{ resultado.curso }}</p>
@@ -349,13 +353,13 @@
           </p>
           <p class="resultado-total">
             <strong>Total de cursos adicionais liberados:</strong>
-            <span class="total-cursos">{{ resultado.cursosAdicionais }}</span>
+            <span class="total-cursos" data-cy="total-cursos">{{ resultado.cursosAdicionais }}</span>
           </p>
         </div>
 
         <h3>Histórico do aluno</h3>
 
-        <div class="historico-cursos">
+        <div class="historico-cursos" data-cy="historico">
           <div
             v-for="grupo in historicoPorCurso"
             :key="grupo.cursoId"

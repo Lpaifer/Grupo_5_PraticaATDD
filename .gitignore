@@ -34,3 +34,5 @@ build/
 
 ### Docker Compose local ###
 .env
+.env.homol
+/artifacts/

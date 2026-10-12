@@ -1,6 +1,7 @@
 FROM node:22-alpine AS build
 
 WORKDIR /app
+ENV CYPRESS_INSTALL_BINARY=0
 COPY package.json package-lock.json ./
 RUN npm ci --no-audit --no-fund
 COPY . .

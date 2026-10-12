@@ -4,3 +4,6 @@ dist
 .vscode
 *.log
 *.md
+cypress/videos
+cypress/screenshots
+cypress/reports

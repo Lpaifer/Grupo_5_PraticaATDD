@@ -46,7 +46,29 @@ Para desenvolver o frontend fora do Docker, execute `npm ci` e `npm run dev` den
 
 [Evidência da execução com PostgreSQL e capturas do pgAdmin](docs/Docker-PostgreSQL.md).
 
-## Verificação atual
+## Pipeline Jenkins, HOMOL e observabilidade
+
+O [Jenkinsfile](Jenkinsfile) versiona o fluxo de checkout, verificação do Docker, testes JUnit com PostgreSQL real, cobertura JaCoCo, lint/build Vue, build das imagens, deploy em homologação, smoke checks e testes Cypress. Falhas interrompem a aprovação do pipeline. Relatórios JUnit, cobertura, vídeos, screenshots e logs são publicados no build.
+
+O ambiente de homologação tem banco e volumes próprios, Prometheus e Grafana com datasource e dashboard provisionados. O ambiente de desenvolvimento continua em `compose.yaml`.
+
+```sh
+# Jenkins com Docker interno e plugins necessários
+docker compose -f docker-compose.jenkins.yml up --build -d
+
+# Alternativa: executar HOMOL diretamente, sem Jenkins
+docker compose -f docker-compose.homol.yml up --build -d --wait db api frontend pgadmin prometheus grafana
+docker compose -f docker-compose.homol.yml --profile checks run --build --rm smoke
+docker compose -f docker-compose.homol.yml --profile e2e run --build --rm cypress
+```
+
+Jenkins: <http://localhost:8080/>. HOMOL: frontend <http://localhost:5174/>, API <http://localhost:8082/>, pgAdmin <http://localhost:5051/>, Prometheus <http://localhost:9091/> e Grafana <http://localhost:3001/>. Se você já usa um Jenkins instalado, configure nele o job conforme a documentação. Use o Jenkins em Docker ou a HOMOL manual por vez, pois compartilham as portas externas de HOMOL.
+
+Consulte [DevOps e pipeline Jenkins](docs/DevOps-Jenkins.md) para desbloquear o Jenkins, criar o job a partir do Git, configurar credenciais e portas, executar CI localmente e coletar os relatórios. A implementação foi inspirada no [projeto Jogo Enigma V5.1](https://github.com/Lpaifer/jogo-enigma-api-v1-A2-portavel-v5.1), adaptada para Spring Boot/Java 26 e Vue deste repositório.
+
+## Evidência histórica de testes
+
+Os resultados do fluxo novo estão em [Validação DevOps — 12/10/2026](docs/DevOps-validacao.md), incluindo JUnit, PostgreSQL real, Cypress e observabilidade. Os números abaixo preservam a evidência anterior.
 
 Em 14/09/2026, `./mvnw clean verify` passou com **20 testes**. O JaCoCo registrou **100% das instruções (729/729)**, **100% dos branches (11/11)** e **100% das linhas (168/168)** nas 25 classes analisadas. A classe `Grupo5PraticaAtddApplication` é excluída do relatório porque contém apenas o método `main` de inicialização, sem regra de negócio; a inicialização da aplicação é verificada nos testes de contexto e na execução Docker. A fase `verify` falha se surgir qualquer instrução, branch ou linha sem cobertura nas classes analisadas. O relatório detalhado é gerado localmente em `target/site/jacoco/index.html`. As porcentagens nos documentos individuais retratam etapas anteriores do ciclo RED/GREEN/BLUE. [Capturas do JUnit e Maven](docs/Testes.md) e [evidência da cobertura atual](docs/Cobertura-atual.md).
 
