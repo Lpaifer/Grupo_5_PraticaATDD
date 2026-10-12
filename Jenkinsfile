@@ -1,5 +1,6 @@
 // Pipeline as code inspirado no jogo-enigma-api-v1-A2-portavel-v5.1.
 // Docker/Compose executam Java 26, Node e Cypress sem instalações no agente.
+// O Jenkins pode usar Java 21; sua porta HTTP é configurada na instalação/Compose.
 def runCmd(String command, boolean allowFailure = false) {
     int code = isUnix()
         ? sh(script: command, returnStatus: true)

@@ -65,7 +65,7 @@ No Linux/macOS: `cp .env.example .env`. O `.env` é ignorado pelo Git e pelos bu
 | pgAdmin | 5050 | 5051 |
 | Prometheus | — | 9091 |
 | Grafana | — | 3001 |
-| Jenkins | — | 8081 |
+| Jenkins | — | 8080 |
 
 O PostgreSQL de HOMOL fica acessível pela rede Docker, sem publicar uma porta no host. No pgAdmin, registre host `db`, porta `5432`, banco `gamificacao_homol`, usuário `gamificacao` e a senha de `HOMOL_DATABASE_PASSWORD`.
 
@@ -76,7 +76,7 @@ docker compose -f docker-compose.jenkins.yml up --build -d
 docker compose -f docker-compose.jenkins.yml exec -T jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 ```
 
-Abra <http://localhost:8081/>, desbloqueie com a senha exibida e crie seu usuário administrador. Os plugins Pipeline, Git, JUnit, HTML Publisher e Lockable Resources já estão instalados pela imagem. O Jenkins roda com Java 21; o build da aplicação usa Java 26 em seu próprio contêiner.
+Abra <http://localhost:8080/>, desbloqueie com a senha exibida e crie seu usuário administrador. Os plugins Pipeline, Git, JUnit, HTML Publisher e Lockable Resources já estão instalados pela imagem. O Jenkins roda com Java 21; o build da aplicação usa Java 26 em seu próprio contêiner. A porta HTTP do Jenkins é definida na instalação ou no Compose, e não no `Jenkinsfile`.
 
 Crie um item do tipo **Pipeline**:
 
@@ -100,6 +100,8 @@ docker compose -f docker-compose.jenkins.yml logs --tail=100 jenkins docker
 Use este Jenkins em Docker ou a HOMOL manual abaixo por vez, pois os dois modos usam as mesmas portas externas. `docker compose -f docker-compose.jenkins.yml down` para os serviços sem apagar volumes. Jenkins, imagens internas e dados de homologação ficam preservados nos volumes.
 
 ## Executar com um Jenkins já instalado
+
+Para a instalação informada pelo grupo, acesse <http://localhost:8080/> e utilize o Java **21.0.12** que já executa o Jenkins. Os testes e o build da aplicação usam Java **26** nas imagens Docker; o pipeline não chama `java` ou Maven diretamente no computador. A API de HOMOL é publicada na porta **8082**, permitindo executar o pipeline enquanto o Jenkins ocupa a porta 8080. A API de desenvolvimento em `compose.yaml` também usa 8080 por padrão; para executá-la ao mesmo tempo, configure outra `API_PORT` nesse ambiente.
 
 Instale os plugins de `jenkins/plugins.txt`, confirme que o usuário do agente tem acesso ao Docker e configure o mesmo job **Pipeline script from SCM**. O Jenkinsfile usa `bat` no Windows e `sh` no Unix; o Docker Desktop deve usar contêineres Linux. Não configure instalações Maven/Node/Java 26 no Jenkins: o pipeline usa as imagens versionadas neste projeto.
 

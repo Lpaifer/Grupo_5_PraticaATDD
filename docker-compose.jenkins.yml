@@ -47,7 +47,7 @@ services:
       - jenkins_home:/var/jenkins_home
       - docker_certs:/certs/client:ro
     ports:
-      - "127.0.0.1:${JENKINS_PORT:-8081}:8080"
+      - "127.0.0.1:${JENKINS_PORT:-8080}:8080"
     depends_on:
       docker:
         condition: service_healthy
