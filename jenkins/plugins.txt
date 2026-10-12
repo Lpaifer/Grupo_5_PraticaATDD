@@ -3,4 +3,3 @@ pipeline-model-definition
 git
 junit
 htmlpublisher
-lockable-resources

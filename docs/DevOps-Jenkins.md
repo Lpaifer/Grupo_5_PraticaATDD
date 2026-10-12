@@ -27,7 +27,7 @@ O `Jenkinsfile` suporta agentes Windows (`bat`) e Linux/macOS (`sh`). Todas as f
 | Observabilidade | API UP, proxy funcional, métricas presentes, `up=1`, datasource/dashboard provisionados | Smoke checks |
 | E2E | Dez cenários Cypress aprovados | JUnit XML, vídeo e screenshots de falhas |
 
-O parâmetro `DEPLOY_HOMOL=false` executa CI e gera as imagens, sem implantação/testes de homologação. HOMOL usa um lock para impedir deployments simultâneos entre jobs no mesmo Jenkins. As imagens têm tag `BUILD_NUMBER-commit`, e relatórios antigos são removidos antes do checkout. O job guarda 15 builds e artefatos dos últimos 10.
+O parâmetro `DEPLOY_HOMOL=false` executa CI e gera as imagens, sem implantação/testes de homologação. `disableConcurrentBuilds()` serializa as execuções do mesmo job, sem depender do plugin Lockable Resources. Utilize um único job para implantar neste ambiente compartilhado de HOMOL; jobs diferentes não são serializados por essa opção. As imagens têm tag `BUILD_NUMBER-commit`, e relatórios antigos são removidos antes do checkout. O job guarda 15 builds e artefatos dos últimos 10.
 
 Falhas reprovam o pipeline. Se uma falha ocorrer depois do deploy, o candidato permanece em HOMOL para diagnóstico; não há rollback automático nem promoção para produção. O banco descartável de CI é removido ao final; os volumes de HOMOL são preservados. Os dados de Cypress usam nomes exclusivos e permanecem no banco de homologação.
 
@@ -76,7 +76,7 @@ docker compose -f docker-compose.jenkins.yml up --build -d
 docker compose -f docker-compose.jenkins.yml exec -T jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 ```
 
-Abra <http://localhost:8080/>, desbloqueie com a senha exibida e crie seu usuário administrador. Os plugins Pipeline, Git, JUnit, HTML Publisher e Lockable Resources já estão instalados pela imagem. O Jenkins roda com Java 21; o build da aplicação usa Java 26 em seu próprio contêiner. A porta HTTP do Jenkins é definida na instalação ou no Compose, e não no `Jenkinsfile`.
+Abra <http://localhost:8080/>, desbloqueie com a senha exibida e crie seu usuário administrador. Os plugins Pipeline, Git, JUnit e HTML Publisher já estão instalados pela imagem. O Jenkins roda com Java 21; o build da aplicação usa Java 26 em seu próprio contêiner. A porta HTTP do Jenkins é definida na instalação ou no Compose, e não no `Jenkinsfile`.
 
 Crie um item do tipo **Pipeline**:
 
@@ -106,6 +106,12 @@ Para a instalação informada pelo grupo, acesse <http://localhost:8080/> e util
 Instale os plugins de `jenkins/plugins.txt`, confirme que o usuário do agente tem acesso ao Docker e configure o mesmo job **Pipeline script from SCM**. O Jenkinsfile usa `bat` no Windows e `sh` no Unix; o Docker Desktop deve usar contêineres Linux. Não configure instalações Maven/Node/Java 26 no Jenkins: o pipeline usa as imagens versionadas neste projeto.
 
 As variáveis `HOMOL_*` podem ser configuradas no ambiente do agente ou em seu `.env` local. Não versione senhas. O job de laboratório usa credenciais padrão quando nenhuma variável é definida; para credenciais privadas, use o armazenamento de credenciais do Jenkins e injete-as no ambiente do job.
+
+## Erro de compilação: opção `lock` inválida
+
+Esse erro ocorre quando um Jenkinsfile usa `lock(resource: ...)` sem o plugin Lockable Resources disponível. O pipeline atual utiliza `disableConcurrentBuilds()` e não requer esse plugin. Publique o Jenkinsfile corrigido na branch configurada no SCM antes de executar novamente o job, pois o Jenkins carrega o arquivo do Git remoto.
+
+Se o erro continuar apontando para `lock`, confira a branch e o commit mostrados no início do console: o job ainda está carregando uma versão anterior. Para os demais relatórios, mantenha instalados os plugins de `jenkins/plugins.txt`, incluindo JUnit e HTML Publisher.
 
 ## Executar CI sem Jenkins
 

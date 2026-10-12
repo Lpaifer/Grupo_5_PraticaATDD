@@ -105,10 +105,6 @@ pipeline {
         }
         stage('Homologação') {
             when { expression { params.DEPLOY_HOMOL } }
-            options {
-                // Serializa HOMOL inclusive entre jobs diferentes neste Jenkins.
-                lock(resource: 'grupo5-homol')
-            }
             stages {
                 stage('Deploy HOMOL') {
                     steps {
