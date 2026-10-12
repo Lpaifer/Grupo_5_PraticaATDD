@@ -22,3 +22,17 @@ Essa é a US escolhida, conforme informado pelo grupo. A autoria da redação or
 Os testes relacionados estão em [`PlataformaGamificacaoTest.java`](../src/test/java/org/example/grupo_5_praticaatdd/domain/PlataformaGamificacaoTest.java). As páginas individuais preservam as evidências históricas de RED, GREEN e BLUE. A [cobertura atual](Cobertura-atual.md) refere-se ao projeto completo, com a exclusão declarada da classe de inicialização.
 
 Antes de publicar, cada integrante deve conferir se sua proposta de US representa a história que de fato redigiu, registrar o texto final com autoria e confirmar a ligação com seu BDD. O grupo precisa informar quem redigiu a US escolhida.
+
+## Verificação ponta a ponta em HOMOL
+
+Os cenários existentes também são exercitados em [`gamificacao.cy.js`](../frontend/cypress/e2e/gamificacao.cy.js), usando Vue, Nginx, API e PostgreSQL reais. O [pipeline Jenkins](DevOps-Jenkins.md) publica os resultados JUnit e os vídeos do Cypress.
+
+| Critério existente | Cenário Cypress |
+|---|---|
+| Não liberar antes da conclusão | `não libera cursos antes da conclusão` |
+| Acumular após a segunda aprovação | `acumula seis cursos após aprovações em dois cursos diferentes` |
+| Aprovar com nota exatamente 7,0 | `libera três cursos com nota exatamente 7` |
+| Aprovar após refazer curso reprovado | `aprova uma nova tentativa e preserva a reprovação no histórico` |
+| Não liberar com nota inferior a 7,0 | `não libera cursos com nota abaixo de 7` |
+
+Os testes adicionais verificam cadastro/recarregamento, rejeição de nota inválida, erro de formulário, falha de rede e o comportamento atual de recompensar nova aprovação no mesmo curso. Eles ampliam a verificação técnica; a autoria das US continua sendo a registrada pelos integrantes.

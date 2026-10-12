@@ -1,0 +1,139 @@
+name: grupo5-homol
+
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: gamificacao_homol
+      POSTGRES_USER: gamificacao
+      POSTGRES_PASSWORD: ${HOMOL_DATABASE_PASSWORD:-gamificacao_homol}
+    volumes:
+      - postgres_homol:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gamificacao -d gamificacao_homol"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  api:
+    image: ${API_IMAGE:-grupo5-api}:${IMAGE_TAG:-local}
+    build: .
+    environment:
+      SPRING_PROFILES_ACTIVE: homol
+      APP_ENVIRONMENT: homol
+      DATABASE_URL: jdbc:postgresql://db:5432/gamificacao_homol
+      DATABASE_USER: gamificacao
+      DATABASE_PASSWORD: ${HOMOL_DATABASE_PASSWORD:-gamificacao_homol}
+    ports:
+      - "${HOMOL_BIND_ADDRESS:-127.0.0.1}:${HOMOL_API_PORT:-8082}:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:8080/actuator/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 30s
+
+  frontend:
+    image: ${FRONTEND_IMAGE:-grupo5-frontend}:${IMAGE_TAG:-local}
+    build: ./frontend
+    ports:
+      - "${HOMOL_BIND_ADDRESS:-127.0.0.1}:${HOMOL_FRONTEND_PORT:-5174}:80"
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1/"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  pgadmin:
+    image: dpage/pgadmin4:9.17
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${HOMOL_PGADMIN_EMAIL:-admin@grupo5.dev}
+      PGADMIN_DEFAULT_PASSWORD: ${HOMOL_PGADMIN_PASSWORD:-admin_homol}
+    ports:
+      - "${HOMOL_BIND_ADDRESS:-127.0.0.1}:${HOMOL_PGADMIN_PORT:-5051}:80"
+    volumes:
+      - pgadmin_homol:/var/lib/pgadmin
+    depends_on:
+      db:
+        condition: service_healthy
+
+  prometheus:
+    image: prom/prometheus:v3.2.1
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=7d
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus/alerts.yml:/etc/prometheus/alerts.yml:ro
+      - prometheus_homol:/prometheus
+    ports:
+      - "${HOMOL_BIND_ADDRESS:-127.0.0.1}:${HOMOL_PROMETHEUS_PORT:-9091}:9090"
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:9090/-/ready"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  grafana:
+    image: grafana/grafana:11.6.0
+    environment:
+      GF_SECURITY_ADMIN_USER: ${HOMOL_GRAFANA_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${HOMOL_GRAFANA_PASSWORD:-admin_homol}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana_homol:/var/lib/grafana
+    ports:
+      - "${HOMOL_BIND_ADDRESS:-127.0.0.1}:${HOMOL_GRAFANA_PORT:-3001}:3000"
+    depends_on:
+      prometheus:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:3000/api/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 15s
+
+  smoke:
+    profiles: ["checks"]
+    build:
+      context: .
+      dockerfile: ci/Dockerfile.smoke
+    environment:
+      GRAFANA_USER: ${HOMOL_GRAFANA_USER:-admin}
+      GRAFANA_PASSWORD: ${HOMOL_GRAFANA_PASSWORD:-admin_homol}
+    depends_on:
+      frontend:
+        condition: service_healthy
+      grafana:
+        condition: service_healthy
+
+  cypress:
+    profiles: ["e2e"]
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.cypress
+    environment:
+      CYPRESS_BASE_URL: http://frontend:80
+    shm_size: 1gb
+    depends_on:
+      frontend:
+        condition: service_healthy
+
+volumes:
+  postgres_homol:
+  pgadmin_homol:
+  prometheus_homol:
+  grafana_homol:

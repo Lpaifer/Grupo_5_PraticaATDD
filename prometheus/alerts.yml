@@ -1,0 +1,18 @@
+groups:
+  - name: grupo5-homol
+    rules:
+      - alert: ApiIndisponivel
+        expr: up{job="grupo5-api"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "API de homologação indisponível"
+          description: "Prometheus não coleta métricas da API há pelo menos um minuto."
+      - alert: TaxaElevadaDeErrosHttp
+        expr: sum(rate(http_server_requests_seconds_count{job="grupo5-api",status=~"5.."}[5m])) / clamp_min(sum(rate(http_server_requests_seconds_count{job="grupo5-api"}[5m])), 0.001) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Mais de 5% das requisições retornam erro 5xx"

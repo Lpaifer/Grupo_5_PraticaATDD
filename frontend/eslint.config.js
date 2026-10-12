@@ -22,6 +22,23 @@ export default defineConfig([
   },
 
   js.configs.recommended,
+  {
+    files: ['cypress/**/*.js'],
+    languageOptions: {
+      globals: {
+        cy: 'readonly',
+        Cypress: 'readonly',
+        expect: 'readonly',
+        describe: 'readonly',
+        it: 'readonly',
+        beforeEach: 'readonly',
+      },
+    },
+  },
+  {
+    files: ['cypress.config.js'],
+    languageOptions: { globals: globals.node },
+  },
   ...pluginVue.configs['flat/essential'],
 
   ...pluginOxlint.buildFromOxlintConfigFile('.oxlintrc.json'),

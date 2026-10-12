@@ -1,0 +1,8 @@
+FROM cypress/included:16.1.1
+WORKDIR /e2e
+ENV CYPRESS_INSTALL_BINARY=0
+COPY package.json package-lock.json ./
+RUN npm ci --no-audit --no-fund
+COPY cypress.config.js ./
+COPY cypress/ cypress/
+ENTRYPOINT ["cypress", "run"]

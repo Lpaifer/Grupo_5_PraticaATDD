@@ -1,0 +1,32 @@
+# Projeto descartável. O Jenkins usa um nome diferente em cada execução.
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: gamificacao_ci
+      POSTGRES_USER: gamificacao
+      POSTGRES_PASSWORD: gamificacao_ci
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gamificacao -d gamificacao_ci"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+
+  backend:
+    build:
+      context: .
+      dockerfile: ci/Dockerfile.backend
+    environment:
+      CI_DATABASE_URL: jdbc:postgresql://db:5432/gamificacao_ci
+      CI_DATABASE_USER: gamificacao
+      CI_DATABASE_PASSWORD: gamificacao_ci
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.ci
