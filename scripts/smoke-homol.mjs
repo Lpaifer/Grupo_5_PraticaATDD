@@ -60,6 +60,8 @@ await eventually('Grafana com datasource e dashboard provisionados', async () =>
   assert.equal(health.database, 'ok')
   const source = await (await request(`${endpoints.grafana}/api/datasources/uid/prometheus`, auth)).json()
   assert.equal(source.url, 'http://prometheus:9090')
-  const dashboard = await (await request(`${endpoints.grafana}/api/dashboards/uid/grupo5-homol`, auth)).json()
-  assert.equal(dashboard.dashboard.uid, 'grupo5-homol')
+  for (const uid of ['grupo5-homol', 'grupo5-observabilidade-homol']) {
+    const dashboard = await (await request(`${endpoints.grafana}/api/dashboards/uid/${uid}`, auth)).json()
+    assert.equal(dashboard.dashboard.uid, uid)
+  }
 })

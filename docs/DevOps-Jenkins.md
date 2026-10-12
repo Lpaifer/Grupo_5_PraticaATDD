@@ -27,7 +27,7 @@ O `Jenkinsfile` suporta agentes Windows (`bat`) e Linux/macOS (`sh`). Todas as f
 | Observabilidade | API UP, proxy funcional, métricas presentes, `up=1`, datasource/dashboard provisionados | Smoke checks |
 | E2E | Dez cenários Cypress aprovados | JUnit XML, vídeo e screenshots de falhas |
 
-O parâmetro `DEPLOY_HOMOL=false` executa CI e gera as imagens, sem implantação/testes de homologação. `disableConcurrentBuilds()` serializa as execuções do mesmo job, sem depender do plugin Lockable Resources. Utilize um único job para implantar neste ambiente compartilhado de HOMOL; jobs diferentes não são serializados por essa opção. As imagens têm tag `BUILD_NUMBER-commit`, e relatórios antigos são removidos antes do checkout. O job guarda 15 builds e artefatos dos últimos 10.
+O parâmetro `DEPLOY_HOMOL=false` executa CI e gera as imagens, sem implantação/testes de homologação. `disableConcurrentBuilds()` serializa as execuções do mesmo job. O plugin Lockable Resources fornece `lock(resource: 'grupo5-homol')`, que também impede deployments simultâneos entre jobs diferentes neste Jenkins. As imagens têm tag `BUILD_NUMBER-commit`, e relatórios antigos são removidos antes do checkout. O job guarda 15 builds e artefatos dos últimos 10.
 
 Falhas reprovam o pipeline. Se uma falha ocorrer depois do deploy, o candidato permanece em HOMOL para diagnóstico; não há rollback automático nem promoção para produção. O banco descartável de CI é removido ao final; os volumes de HOMOL são preservados. Os dados de Cypress usam nomes exclusivos e permanecem no banco de homologação.
 
@@ -76,7 +76,7 @@ docker compose -f docker-compose.jenkins.yml up --build -d
 docker compose -f docker-compose.jenkins.yml exec -T jenkins cat /var/jenkins_home/secrets/initialAdminPassword
 ```
 
-Abra <http://localhost:8080/>, desbloqueie com a senha exibida e crie seu usuário administrador. Os plugins Pipeline, Git, JUnit e HTML Publisher já estão instalados pela imagem. O Jenkins roda com Java 21; o build da aplicação usa Java 26 em seu próprio contêiner. A porta HTTP do Jenkins é definida na instalação ou no Compose, e não no `Jenkinsfile`.
+Abra <http://localhost:8080/>, desbloqueie com a senha exibida e crie seu usuário administrador. Os plugins Pipeline, Git, JUnit, HTML Publisher e Lockable Resources já estão instalados pela imagem. O Jenkins roda com Java 21; o build da aplicação usa Java 26 em seu próprio contêiner. A porta HTTP do Jenkins é definida na instalação ou no Compose, e não no `Jenkinsfile`.
 
 Crie um item do tipo **Pipeline**:
 
@@ -105,13 +105,32 @@ Para a instalação informada pelo grupo, acesse <http://localhost:8080/> e util
 
 Instale os plugins de `jenkins/plugins.txt`, confirme que o usuário do agente tem acesso ao Docker e configure o mesmo job **Pipeline script from SCM**. O Jenkinsfile usa `bat` no Windows e `sh` no Unix; o Docker Desktop deve usar contêineres Linux. Não configure instalações Maven/Node/Java 26 no Jenkins: o pipeline usa as imagens versionadas neste projeto.
 
+Em **Gerenciar Jenkins → Plugins**, confira que estes plugins estão instalados e ativos antes do build:
+
+| Plugin | ID | Uso no pipeline |
+|---|---|---|
+| Pipeline | `workflow-aggregator` | Execução do pipeline |
+| Pipeline: Declarative | `pipeline-model-definition` | Sintaxe `pipeline`, `stages` e `post` |
+| Git | `git` | Checkout do repositório |
+| JUnit | `junit` | Publicação dos resultados de testes |
+| HTML Publisher | `htmlpublisher` | Passo `publishHTML` e relatório JaCoCo navegável |
+| Lockable Resources | `lockable-resources` | Bloqueio de HOMOL com `lock` |
+
+O arquivo `jenkins/plugins.txt` instala esses plugins na imagem Docker fornecida pelo projeto. Em um Jenkins já instalado no computador, a instalação é feita pelo gerenciador de plugins desse Jenkins. Reinicie o Jenkins após a instalação para carregar os plugins.
+
 As variáveis `HOMOL_*` podem ser configuradas no ambiente do agente ou em seu `.env` local. Não versione senhas. O job de laboratório usa credenciais padrão quando nenhuma variável é definida; para credenciais privadas, use o armazenamento de credenciais do Jenkins e injete-as no ambiente do job.
 
 ## Erro de compilação: opção `lock` inválida
 
-Esse erro ocorre quando um Jenkinsfile usa `lock(resource: ...)` sem o plugin Lockable Resources disponível. O pipeline atual utiliza `disableConcurrentBuilds()` e não requer esse plugin. Publique o Jenkinsfile corrigido na branch configurada no SCM antes de executar novamente o job, pois o Jenkins carrega o arquivo do Git remoto.
+Esse erro indica que o plugin [Lockable Resources](https://plugins.jenkins.io/lockable-resources/) está ausente ou inativo. Em **Gerenciar Jenkins → Plugins → Plugins disponíveis**, pesquise **Lockable Resources**, instale e reinicie o Jenkins para carregar o plugin. Confira que ele aparece ativo na lista de plugins instalados e execute o job novamente.
 
-Se o erro continuar apontando para `lock`, confira a branch e o commit mostrados no início do console: o job ainda está carregando uma versão anterior. Para os demais relatórios, mantenha instalados os plugins de `jenkins/plugins.txt`, incluindo JUnit e HTML Publisher.
+O pipeline utiliza o plugin para bloquear a homologação entre jobs diferentes. Não é necessário cadastrar o recurso manualmente: o plugin cria `grupo5-homol` ao usar o nome no pipeline. Mantenha instalados também os demais plugins de `jenkins/plugins.txt`, incluindo JUnit e HTML Publisher. Se o Jenkinsfile tiver sido alterado no computador, publique a alteração na branch configurada no SCM antes da nova execução, pois o Jenkins carrega o arquivo do Git remoto.
+
+## Erro: `No such DSL method 'publishHTML'`
+
+O passo [`publishHTML`](https://www.jenkins.io/doc/pipeline/steps/htmlpublisher/) é fornecido pelo plugin **HTML Publisher**. Esse erro indica que o plugin está ausente ou inativo no Jenkins que executa o job. Em **Gerenciar Jenkins → Plugins → Plugins disponíveis**, pesquise **HTML Publisher**, instale e reinicie o Jenkins. Confirme que ele está ativo em **Plugins instalados** e execute o job novamente.
+
+O Jenkinsfile já utiliza o passo adequado para publicar o relatório HTML do JaCoCo. A correção é disponibilizar o plugin nesse Jenkins; instalar um plugin de cobertura diferente não disponibiliza automaticamente `publishHTML`. Se a falha ocorrer em `post`, confira também as mensagens anteriores no console para identificar uma eventual falha de testes/build que tenha ocorrido antes da publicação do relatório.
 
 ## Executar CI sem Jenkins
 
@@ -166,6 +185,8 @@ O último comando preserva os volumes e dados. Não adicione `--volumes` para um
 O Actuator expõe `/actuator/health`, `/actuator/info` e `/actuator/prometheus`. O health check considera o banco; detalhes internos não são expostos na resposta pública. Prometheus coleta a API pela rede interna em `api:8080` a cada 15 segundos. Não é necessário publicar `/actuator` pelo frontend.
 
 No Grafana, abra a pasta **Grupo 5** e o dashboard **Grupo 5 — Homologação**, UID `grupo5-homol`. Há painéis de disponibilidade, uptime, CPU, conexões PostgreSQL, taxa de requisições, latência média, memória JVM e respostas por status HTTP. Os painéis com `rate` precisam de pelo menos duas coletas; gere tráfego na interface e aguarde alguns segundos para visualizar as séries.
+
+Para a entrega da A2, utilize também o dashboard **Grupo 5 – Observabilidade HOMOL**, UID `grupo5-observabilidade-homol`, criado conforme o tutorial Canvas com quatro painéis: Status da API (Stat), Requisições HTTP (Time series), Tempo Médio de Resposta (Time series) e Memória JVM – Heap (Gauge). Acesse <http://localhost:3001/d/grupo5-observabilidade-homol>. As [questões de fechamento e orientações para os prints](Fechamento-A2.md) explicam as consultas e as adaptações para este projeto.
 
 Em Prometheus, consulte `up{job="grupo5-api"}`: o valor esperado é `1`. As regras `ApiIndisponivel` e `TaxaElevadaDeErrosHttp` ficam na página **Alerts**. Elas avaliam condições no Prometheus; envio de notificações externas/Alertmanager não está configurado.
 

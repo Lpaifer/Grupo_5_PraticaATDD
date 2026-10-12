@@ -66,6 +66,8 @@ Jenkins: <http://localhost:8080/>. HOMOL: frontend <http://localhost:5174/>, API
 
 Consulte [DevOps e pipeline Jenkins](docs/DevOps-Jenkins.md) para desbloquear o Jenkins, criar o job a partir do Git, configurar credenciais e portas, executar CI localmente e coletar os relatórios. A implementação foi inspirada no [projeto Jogo Enigma V5.1](https://github.com/Lpaifer/jogo-enigma-api-v1-A2-portavel-v5.1), adaptada para Spring Boot/Java 26 e Vue deste repositório.
 
+As [questões de fechamento da A2](docs/Fechamento-A2.md) e o dashboard de quatro painéis conforme o tutorial Canvas estão documentados junto da esteira. Dashboard: <http://localhost:3001/d/grupo5-observabilidade-homol>.
+
 ## Evidência histórica de testes
 
 Os resultados do fluxo novo estão em [Validação DevOps — 12/10/2026](docs/DevOps-validacao.md), incluindo JUnit, PostgreSQL real, Cypress e observabilidade. Os números abaixo preservam a evidência anterior.
