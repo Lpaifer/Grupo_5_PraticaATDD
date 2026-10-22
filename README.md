@@ -6,6 +6,10 @@ Projeto desenvolvido para a disciplina de DevOps & QA utilizando os conceitos de
 
 O estudo de caso é uma plataforma de educação continuada gamificada. Alunos dos planos Básico ou Premium concluem cursos, recebem três cursos adicionais a cada conclusão aprovada (curso concluído e nota final de pelo menos 7,0) e podem consultar o histórico de tentativas e liberações acumuladas.
 
+## Evolução arquitetural B1
+
+A [solução do Desafio 1 e o registro arquitetural B1](docs/arquitetura/README.md) descrevem a decisão de evoluir o Core para monólito modular, seguindo o exemplo da professora e adaptando as fronteiras ao projeto. O documento reúne RFs, RNFs, ASRs, RPCs, alternativas, ADR-001, visão C4 e as implementações e evidências planejadas. A implementação do mini-lab está pendente.
+
 ## Executar e explorar a API
 
 Com Java 26 configurado em `JAVA_HOME`, execute `./mvnw spring-boot:run` (Windows: `.\mvnw.cmd spring-boot:run`). A aplicação inicia na porta 8080 com banco H2 em memória.
