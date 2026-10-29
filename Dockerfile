@@ -5,7 +5,11 @@ COPY .mvn/ .mvn/
 COPY mvnw pom.xml ./
 RUN chmod +x mvnw
 COPY src/ src/
-RUN ./mvnw -B -ntp -DskipTests package
+RUN for attempt in 1 2 3; do \
+      ./mvnw -B -ntp -DskipTests package && exit 0; \
+      if [ "$attempt" -eq 3 ]; then exit 1; fi; \
+      sleep 3; \
+    done
 
 FROM eclipse-temurin:26-jre-alpine
 

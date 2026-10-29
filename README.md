@@ -8,7 +8,7 @@ O estudo de caso é uma plataforma de educação continuada gamificada. Alunos d
 
 ## Evolução arquitetural B1
 
-A [solução do Desafio 1 e o registro arquitetural B1](docs/arquitetura/README.md) descrevem a decisão de evoluir o Core para monólito modular, seguindo o exemplo da professora e adaptando as fronteiras ao projeto. O documento reúne RFs, RNFs, ASRs, RPCs, alternativas, ADR-001, visão C4 e as implementações e evidências planejadas. A implementação do mini-lab está pendente.
+A [solução do Desafio 1 e o registro arquitetural B1](docs/arquitetura/README.md) descrevem a evolução do Core para monólito modular, seguindo o exemplo da professora e adaptando as fronteiras ao projeto. O primeiro recorte encapsula aprovação e recompensa em `gamificacao`, com contrato Java público, regras internas e testes ArchUnit das dependências. A persistência continua no serviço existente, na mesma transação. A validação em 28/10/2026 aprovou 25 testes da suíte normal, um teste PostgreSQL e dez cenários Cypress, com cobertura integral e smoke checks em HOMOL. Consulte a [comparação de dependências](docs/arquitetura/evidencias/desafio-1/dependencias.md) e a [validação do mini-lab](docs/arquitetura/evidencias/desafio-1/validacao.md) para comandos, resultados e limites da verificação.
 
 ## Executar e explorar a API
 

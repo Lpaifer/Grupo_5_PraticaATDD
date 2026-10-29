@@ -2,6 +2,11 @@ FROM eclipse-temurin:26-jdk-alpine
 WORKDIR /workspace
 COPY .mvn/ .mvn/
 COPY mvnw pom.xml ./
-RUN chmod +x mvnw && ./mvnw -B -ntp -DskipTests dependency:go-offline
+RUN chmod +x mvnw && \
+    for attempt in 1 2 3; do \
+      ./mvnw -B -ntp -DskipTests dependency:go-offline && exit 0; \
+      if [ "$attempt" -eq 3 ]; then exit 1; fi; \
+      sleep 3; \
+    done
 COPY src/ src/
 CMD ["./mvnw", "-B", "-ntp", "-Ppostgres-it", "clean", "verify"]

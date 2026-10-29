@@ -1,6 +1,12 @@
 # Evidência — cobertura JaCoCo atual
 
-Verificação em 14/09/2026:
+## Mini-lab B1 — 28/10/2026
+
+Após o primeiro recorte modular, `mvnw clean verify` passou com **25 testes**, sem falhas, erros ou testes ignorados. Nas 25 classes analisadas, a cobertura foi de **682/682 instruções, 11/11 branches e 144/144 linhas (100%)**. A exclusão da classe de inicialização e os controles de cobertura integral foram mantidos. Consulte a [validação do Desafio 1](arquitetura/evidencias/desafio-1/validacao.md) para ambiente, comandos, escopo e limitações.
+
+## Evidência histórica — 14/09/2026
+
+Verificação anterior ao mini-lab:
 
 ```sh
 ./mvnw clean verify

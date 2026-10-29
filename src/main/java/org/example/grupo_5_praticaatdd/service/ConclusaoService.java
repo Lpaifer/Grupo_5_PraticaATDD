@@ -2,10 +2,8 @@ package org.example.grupo_5_praticaatdd.service;
 
 import org.example.grupo_5_praticaatdd.api.dto.ConclusaoResponse;
 import org.example.grupo_5_praticaatdd.api.dto.ProcessarConclusaoRequest;
-import org.example.grupo_5_praticaatdd.domain.Aluno;
-import org.example.grupo_5_praticaatdd.domain.ConclusaoCurso;
-import org.example.grupo_5_praticaatdd.domain.Curso;
-import org.example.grupo_5_praticaatdd.domain.PlataformaGamificacao;
+import org.example.grupo_5_praticaatdd.gamificacao.api.AvaliarConclusao;
+import org.example.grupo_5_praticaatdd.gamificacao.api.DadosConclusao;
 import org.example.grupo_5_praticaatdd.entity.ConclusaoEntity;
 import org.example.grupo_5_praticaatdd.repository.AlunoRepository;
 import org.example.grupo_5_praticaatdd.repository.ConclusaoRepository;
@@ -19,7 +17,7 @@ public class ConclusaoService {
     private final AlunoRepository alunoRepository;
     private final CursoRepository cursoRepository;
     private final ConclusaoRepository conclusaoRepository;
-    private final PlataformaGamificacao plataforma = new PlataformaGamificacao();
+    private final AvaliarConclusao avaliarConclusao = new AvaliarConclusao();
 
     public ConclusaoService(AlunoRepository alunoRepository, CursoRepository cursoRepository,
                             ConclusaoRepository conclusaoRepository) {
@@ -39,16 +37,14 @@ public class ConclusaoService {
         var curso = cursoRepository.findById(request.cursoId())
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Curso não encontrado: " + request.cursoId()));
 
-        var alunoDominio = new Aluno(aluno.getNome(), aluno.getPlano(), aluno.getCursosAdicionais());
-        var conclusaoDominio = new ConclusaoCurso(alunoDominio, new Curso(curso.getNome()),
-                request.nota(), request.concluido());
-        plataforma.processarConclusao(conclusaoDominio);
+        var resultado = avaliarConclusao.avaliar(new DadosConclusao(
+                request.nota(), request.concluido(), aluno.getCursosAdicionais()));
 
-        aluno.atualizarCursosAdicionais(alunoDominio.getCursosAdicionaisLiberados());
+        aluno.atualizarCursosAdicionais(resultado.cursosAdicionais());
         conclusaoRepository.save(new ConclusaoEntity(aluno, curso, request.nota(),
-                request.concluido(), conclusaoDominio.foiAprovado()));
+                request.concluido(), resultado.aprovado()));
 
         return new ConclusaoResponse(aluno.getId(), aluno.getNome(), curso.getNome(), request.nota(),
-                request.concluido(), conclusaoDominio.foiAprovado(), aluno.getCursosAdicionais());
+                request.concluido(), resultado.aprovado(), aluno.getCursosAdicionais());
     }
 }

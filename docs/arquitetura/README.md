@@ -2,7 +2,7 @@
 
 Registro cumulativo das decisões arquiteturais da plataforma de Educação Continuada Gamificada. A evolução parte do MVP da AC1 e preserva suas regras, contratos HTTP e persistência enquanto introduz fronteiras entre capacidades de negócio.
 
-**Desafio 1 — decisão:** evoluir o Core de monólito em camadas para monólito modular, mantendo uma aplicação Java/Spring Boot e banco relacional. **Situação em 21/10/2026:** decisão documentada; implementação do mini-lab e coleta das evidências pendentes. As estruturas futuras e os resultados esperados abaixo constituem o plano de execução.
+**Desafio 1 — decisão:** evoluir o Core de monólito em camadas para monólito modular, mantendo uma aplicação Java/Spring Boot e banco relacional. **Situação em 28/10/2026:** primeiro recorte de aprovação e recompensa implementado e validado localmente e em Docker/HOMOL, com contrato público e verificação arquitetural. A [comparação de dependências](evidencias/desafio-1/dependencias.md) e a [validação](evidencias/desafio-1/validacao.md) registram 25 testes da suíte normal, um teste PostgreSQL e dez cenários Cypress aprovados, além de cobertura integral e smoke checks. A modularização completa de Alunos, Cursos e Gamificação continua como evolução futura.
 
 O formato e a decisão seguem o exemplo orientativo da professora. A adaptação utiliza as funcionalidades existentes no repositório e acrescenta critérios verificáveis para as dependências entre módulos. Os Desafios 2 a 6 terão seus próprios registros quando forem discutidos.
 
@@ -10,9 +10,9 @@ O formato e a decisão seguem o exemplo orientativo da professora. A adaptação
 
 O enunciado prevê crescimento de aproximadamente 1.000 para até 100.000 usuários, com aumento de demanda especialmente no Ranking. Esses números representam o cenário do exercício; não são medições de usuários ou de capacidade deste projeto. Quantidade de usuários cadastrados, concorrência e requisições por segundo devem ser distinguidas em futuras avaliações de carga.
 
-O Core atual está organizado por camadas técnicas: `api`, `service`, `domain`, `entity` e `repository`. Alunos, cursos e conclusões compartilham aplicação e banco. A aprovação exige curso concluído e nota mínima de 7,0; cada aprovação acrescenta três cursos ao saldo, preservando todas as tentativas no histórico.
+Na base anterior ao mini-lab, o Core estava organizado por camadas técnicas: `api`, `service`, `domain`, `entity` e `repository`. O primeiro recorte acrescenta o módulo `gamificacao` e mantém as demais camadas em transição. Alunos, cursos e conclusões compartilham aplicação e banco. A aprovação exige curso concluído e nota mínima de 7,0; cada aprovação acrescenta três cursos ao saldo, preservando todas as tentativas no histórico.
 
-O case B1 também menciona Ranking, moedas, badges, múltiplas instituições, IA, notificações e IoT. Essas capacidades ainda não estão implementadas no MVP. A modularização inicial utilizará o fluxo existente de conclusão e recompensa; a fronteira de Ranking será definida quando seus requisitos forem detalhados.
+O case B1 também menciona Ranking, moedas, badges, múltiplas instituições, IA, notificações e IoT. Essas capacidades ainda não estão implementadas no MVP. A modularização inicial utiliza o fluxo existente de conclusão e recompensa; a fronteira de Ranking será definida quando seus requisitos forem detalhados.
 
 **Pergunta do Tech Lead:** quais fronteiras internas permitem evoluir o produto com menor acoplamento, mantendo uma operação compatível com seis desenvolvedores? Há evidência de que uma capacidade precise de escala ou deploy independente agora?
 
@@ -45,11 +45,11 @@ RNF é um requisito não funcional. ASR é o requisito arquiteturalmente signifi
 
 ### Matriz cumulativa de ASRs
 
-| ASR | Origem | Efeito arquitetural | Evidência planejada | Estado |
+| ASR | Origem | Efeito arquitetural | Evidência | Estado |
 | --- | --- | --- | --- | --- |
-| ASR-01 — Manutenibilidade | RF02 e evolução AC1 | Módulos com contratos públicos e implementação encapsulada | Comparação de dependências antes/depois, verificação das fronteiras e testes de regressão | A validar no Desafio 1 |
+| ASR-01 — Manutenibilidade | RF02 e evolução AC1 | Módulos com contratos públicos e implementação encapsulada | [Dependências e rejeição de violações](evidencias/desafio-1/dependencias.md), testes de regressão | Validado no primeiro recorte; demais capacidades em transição |
 | ASR-02 — Escalabilidade | RF01 e cenário de crescimento | Preservar possibilidade de extração seletiva sem distribuir o Core agora | Registrar fronteiras e gatilhos de revisão; capacidade dependerá de ensaio de carga posterior | Premissa de evolução; capacidade não demonstrada |
-| ASR-03 — Complexidade operacional | RF01/RF02 e equipe de seis pessoas | Manter uma aplicação Core, uma imagem e um deploy do backend | Comparar unidades de implantação e executar o fluxo existente após a refatoração | A validar no Desafio 1 |
+| ASR-03 — Complexidade operacional | RF01/RF02 e equipe de seis pessoas | Manter uma aplicação Core, uma imagem e um deploy do backend | [Execução local e Docker/HOMOL](evidencias/desafio-1/validacao.md), com o mesmo conjunto de serviços | Validado no primeiro recorte; uma aplicação Core, com smoke e Cypress aprovados |
 
 Os próximos desafios deverão atualizar esta matriz. Um RNF pode tornar-se ASR em outra decisão quando influenciar uma fronteira ou mecanismo específico.
 
@@ -79,7 +79,7 @@ Uma previsão de crescimento justifica preparar e observar fronteiras. A decisã
 
 ## 6 Decisão do Tech Lead
 
-**Adotar monólito modular como direção de evolução do Core.** As capacidades continuarão no mesmo processo Spring Boot e utilizarão chamadas locais. A primeira implementação será um recorte das regras de aprovação e concessão de cursos adicionais, com contratos que exponham dados de negócio e ocultem sua implementação.
+**Adotar monólito modular como direção de evolução do Core.** As capacidades continuam no mesmo processo Spring Boot e utilizam chamadas locais. A primeira implementação encapsula as regras de aprovação e concessão de cursos adicionais, com contratos que expõem dados de negócio e ocultam sua implementação.
 
 As fronteiras propostas para a evolução são:
 
@@ -103,7 +103,7 @@ Ranking permanece como candidato futuro a uma fronteira própria. Sua eventual e
 | --- | --- |
 | Título | ADR-001 — Evoluir o Core de monólito em camadas para monólito modular |
 | Data | 21/10/2026 |
-| Estado | Decisão adotada para orientar o desenvolvimento; implementação e validação pendentes |
+| Estado | Decisão adotada em 21/10/2026; primeiro recorte implementado e validado localmente e em Docker/HOMOL em 28/10/2026. Ampliação das fronteiras permanece como evolução futura; Jenkins não foi disparado nesta validação. |
 | Contexto | MVP com cadastros, conclusões, histórico e recompensa; cenário B1 de crescimento e futuras capacidades com ritmos de evolução distintos. |
 | ASRs | ASR-01 Manutenibilidade; ASR-02 Escalabilidade; ASR-03 Complexidade operacional. |
 | RPCs | Java/Spring Boot; seis desenvolvedores; banco relacional; preservação do legado AC1 e evolução incremental. |
@@ -116,7 +116,7 @@ Ranking permanece como candidato futuro a uma fronteira própria. Sua eventual e
 
 ## 8 C4 na visão de Container
 
-A visão abaixo representa a arquitetura pretendida após o primeiro recorte modular. O Core continua sendo um único container C4: uma aplicação executável. Módulos Java são organização interna dessa aplicação, não novos serviços ou contêineres Docker.
+A visão abaixo representa a implantação Docker/HOMOL mantida pelo primeiro recorte modular; sua execução nesta revisão é identificada nas evidências de validação. O Core continua sendo um único container C4: uma aplicação executável. Módulos Java são organização interna dessa aplicação, não novos serviços ou contêineres Docker.
 
 ```mermaid
 flowchart LR
@@ -133,15 +133,15 @@ flowchart LR
 
 O diagrama usa o ambiente Docker/HOMOL com PostgreSQL. Os perfis locais e os testes aplicáveis continuam podendo usar H2. Jenkins, Prometheus, Grafana e pgAdmin permanecem na infraestrutura existente; o Desafio 1 não introduz unidades operacionais adicionais. A visão de componentes do Core será detalhada no Desafio 2, acompanhando as fronteiras efetivamente implementadas.
 
-## 9 Mini-lab e implementações necessárias
+## 9 Mini-lab implementado
 
 ### Hipótese e recorte
 
 **Hipótese:** as regras existentes de aprovação e recompensa podem ser encapsuladas em um módulo com acesso por contrato público, preservando o comportamento e mantendo a implantação conjunta.
 
-O recorte inicial será a avaliação de uma conclusão e o cálculo do saldo resultante. A orquestração de persistência continuará no serviço existente durante o mini-lab. Isso permite avaliar uma fronteira de negócio sem incluir, no mesmo experimento, troca de persistência ou comunicação distribuída.
+O recorte implementa a avaliação de uma conclusão e o cálculo do saldo resultante. A orquestração de persistência continua no serviço existente. Isso permite avaliar uma fronteira de negócio sem incluir, no mesmo experimento, troca de persistência ou comunicação distribuída.
 
-### Estrutura atual
+### Estrutura anterior ao recorte
 
 Os caminhos abaixo são relativos a `src/main/java/org/example/grupo_5_praticaatdd/`.
 
@@ -171,9 +171,9 @@ repository/
   ConclusaoRepository.java
 ```
 
-Hoje `ConclusaoService` acessa três repositórios, instancia objetos de domínio, invoca `PlataformaGamificacao`, atualiza saldo e registra a tentativa. As regras já são Java puro, mas o chamador conhece as classes utilizadas para processá-las.
+Na base `e112d7db12c292030c6980f98814f42de7903c38`, `ConclusaoService` acessava três repositórios, instanciava objetos de domínio, invocava `PlataformaGamificacao`, atualizava saldo e registrava a tentativa. As regras já eram Java puro, mas o chamador conhecia as classes utilizadas para processá-las.
 
-### Estrutura proposta para o primeiro recorte
+### Estrutura implementada no primeiro recorte
 
 ```text
 gamificacao/
@@ -183,35 +183,49 @@ gamificacao/
     ResultadoConclusao.java
   internal/
     dominio/
-      ... regras reaproveitadas de aprovação e recompensa
+      PoliticaConclusao.java
 api/          # controllers e DTOs HTTP existentes
 service/      # orquestração existente adaptada ao contrato do módulo
-domain/       # tipos legados que ainda sejam usados fora do recorte
+domain/
+  Plano.java  # tipo ainda usado pelo cadastro e pela persistência
 entity/       # persistência existente
 repository/   # acesso a dados existente
 ```
 
-Os nomes indicam o desenho proposto; não representam classes já criadas. `gamificacao.api` será a interface Java pública do módulo, distinta dos controllers REST do pacote `api` existente. Seus dados devem conter valores necessários à avaliação, como nota, conclusão e saldo atual, e devolver aprovação e saldo resultante. O chamador não receberá entidades JPA nem objetos internos mutáveis do módulo.
+`gamificacao.api` é o contrato Java público do módulo, distinto dos controllers REST do pacote `api` existente. A fachada concreta `AvaliarConclusao` recebe o record imutável `DadosConclusao(nota, concluido, cursosAdicionaisAtuais)` e retorna `ResultadoConclusao(aprovado, cursosAdicionais)`. A entrada contém valores já validados pela aplicação. O chamador não recebe entidades JPA nem objetos internos mutáveis. A fachada instancia a política interna sem depender de Spring.
 
-As regras de `ConclusaoCurso` e `PlataformaGamificacao` serão reaproveitadas ou adaptadas dentro do recorte. A localização dos tipos atuais `Aluno`, `Curso` e `Plano` deverá considerar seus outros consumidores: tipos necessários ao legado não serão movidos para `internal` enquanto continuarem acessados externamente. A regra de aprovação e a quantidade da recompensa terão uma única implementação utilizada pelo fluxo real.
+As regras antes distribuídas entre `ConclusaoCurso` e `PlataformaGamificacao` foram adaptadas em `PoliticaConclusao`, com uma única implementação usada pelo fluxo real. Os antigos objetos de domínio `Aluno`, `Curso`, `ConclusaoCurso` e `PlataformaGamificacao`, usados somente nesse cálculo e seus testes, foram substituídos pelos valores do contrato. `Plano` permanece no legado por ser utilizado por `AlunoService` e `AlunoEntity`. Os oito testes de domínio foram adaptados para a API pública, preservando os nomes dos cenários ATDD.
 
-### Etapas de implementação
+```mermaid
+flowchart LR
+    servico["ConclusaoService<br/>Validação, consultas e transação JPA"]
+    contrato["gamificacao.api<br/>AvaliarConclusao + records"]
+    regra["gamificacao.internal.dominio<br/>PoliticaConclusao"]
+    repositorios["Repositórios existentes"]
+    servico --> contrato
+    contrato --> regra
+    servico --> repositorios
+```
 
-| Etapa | Alteração prevista | Critério de aceitação |
+O pacote `internal` não usa encapsulamento JPMS: a fronteira é protegida pelos testes de dependências no Maven. O módulo é Java puro, e os registros de tentativas, o histórico e o saldo persistido ainda pertencem às camadas legadas em transição.
+
+### Etapas e critérios de implementação
+
+| Etapa | Alteração realizada | Critério de aceitação |
 | --- | --- | --- |
-| 1 — Registrar a base | Capturar estrutura, imports relevantes, revisão Git e resultados dos testes anteriores à mudança | Comparação vinculada a revisões identificáveis, sem apresentar resultados antigos como posteriores à refatoração. |
-| 2 — Criar o contrato modular | Definir entrada, saída e operação pública para avaliar aprovação e saldo | Valores de negócio na fronteira; ausência de entidades JPA ou dependência HTTP no contrato. |
-| 3 — Encapsular as regras | Reaproveitar a regra existente dentro de `gamificacao.internal` e ligar a operação pública a ela | Nota mínima 7,0, conclusão obrigatória e acréscimo de três cursos preservados, sem duplicação da regra. |
-| 4 — Integrar o fluxo existente | Adaptar `ConclusaoService` para consumir somente o contrato público do recorte | Endpoint e JSON preservados; saldo e tentativa continuam na mesma transação local. |
-| 5 — Verificar dependências | Adicionar verificação arquitetural automatizada das fronteiras do recorte, por exemplo com ArchUnit em escopo de teste | Falhar se código produtivo externo acessar `gamificacao.internal` ou se o recorte depender de controllers, serviços legados, JPA, Spring ou repositórios. |
-| 6 — Preservar comportamento | Ajustar localização dos testes quando necessário e executar regressão | Cenários existentes continuam válidos e a verificação de cobertura atual é mantida. |
-| 7 — Coletar evidências | Registrar comparação, resultados e execução da aplicação | Relato do que o experimento demonstrou, limitações e links para artefatos/revisões. |
+| 1 — Registrar a base | Estrutura, imports, revisão Git e resultados anteriores registrados nas evidências | Comparação vinculada à base identificável e ao diff local, sem apresentar resultados antigos como posteriores à refatoração. |
+| 2 — Criar o contrato modular | Fachada `AvaliarConclusao` e records de entrada e saída criados | Valores de negócio na fronteira; ausência de entidades JPA ou dependência HTTP no contrato. |
+| 3 — Encapsular as regras | Regra existente adaptada em `gamificacao.internal.dominio.PoliticaConclusao` | Nota mínima 7,0, conclusão obrigatória e acréscimo de três cursos preservados, sem duplicação da regra. |
+| 4 — Integrar o fluxo existente | `ConclusaoService` adaptado para consumir o contrato público do recorte | Endpoint e JSON preservados; saldo e tentativa continuam na mesma transação local. |
+| 5 — Verificar dependências | Três testes ArchUnit adicionados e rejeição de violações demonstrada | Falhar se código produtivo externo acessar `gamificacao.internal` ou se o recorte depender de controllers, serviços legados, JPA, Spring ou repositórios. |
+| 6 — Preservar comportamento | Oito cenários adaptados ao contrato e regressão completa executada | 25 testes aprovados; cobertura integral mantida nas classes analisadas. |
+| 7 — Coletar evidências | Comparação, testes, execução HTTP com H2 e validação Docker/HOMOL registrados | 36 testes automatizados aprovados no CI/E2E, cobertura integral, smoke e observabilidade; comandos executados diretamente, sem disparo Jenkins. |
 
-O teste das dependências deverá considerar referências de tipos e não depender apenas do nome das pastas. Os testes internos do módulo poderão acessar sua implementação; a proibição de acesso externo refere-se ao código produtivo. A demonstração da regra deverá incluir uma violação temporária controlada, registrar sua rejeição e removê-la antes de concluir a alteração.
+`GamificacaoArchitectureTest` usa ArchUnit 1.4.2 em escopo de teste para analisar referências de tipos no bytecode produtivo. Suas três regras impedem acesso externo a `gamificacao.internal`, limitam dependências do módulo a Java e ao próprio módulo e impedem que os records da API exponham implementação interna. Testes são excluídos dessa análise. O [experimento controlado](evidencias/desafio-1/dependencias.md) introduziu referências proibidas em duas classes temporárias, confirmou duas falhas arquiteturais e removeu as classes antes da regressão limpa. A versão adotada possui [suporte oficial a Java 26](https://github.com/TNG/ArchUnit/releases/tag/v1.4.2).
 
-### Comparação planejada
+### Comparação do recorte
 
-| Aspecto | Antes | Depois esperado no recorte |
+| Aspecto | Antes | Depois no recorte |
 | --- | --- | --- |
 | Acesso às regras | Serviço conhece os objetos utilizados para executar a regra | Serviço chama o contrato público de avaliação. |
 | Dependências | Separação por camada sem verificação específica de módulo | Nenhum acesso produtivo externo à implementação interna do recorte, com teste automatizado. |
@@ -232,13 +246,13 @@ O experimento verifica encapsulamento e preservação funcional. Não comprova c
 - Notas inválidas e recursos inexistentes mantêm as respostas da API e não registram tentativas inválidas.
 - Consultas preservam os dados do aluno e a ordem das tentativas no histórico.
 
-### Verificações previstas
+### Verificação e reprodução
 
-Com Java 26 configurado, executar `./mvnw clean verify` ou, no Windows, `.\mvnw.cmd clean verify`. A verificação de dependências será integrada à suíte Maven. O [POM](../../pom.xml) já exige cobertura integral de instruções, branches e linhas nas classes analisadas, com exclusão declarada da classe de inicialização.
+Com Java 26 configurado em `JAVA_HOME`, executar `./mvnw clean verify` ou, no Windows, `.\mvnw.cmd clean verify`. A verificação de dependências está integrada à suíte Maven. O [POM](../../pom.xml) mantém a exigência de cobertura integral de instruções, branches e linhas nas classes analisadas, com exclusão declarada da classe de inicialização. Os [resultados desta implementação](evidencias/desafio-1/validacao.md) distinguem a regressão local das verificações executadas em Docker/HOMOL.
 
-Na verificação anterior à implementação, realizada em 21/10/2026 com `mvnw verify`, passaram 22 testes e os controles JaCoCo, com 729 instruções, 11 branches e 168 linhas cobertas nas 25 classes analisadas. Esses números descrevem a base consultada; a refatoração poderá alterar a contagem e exigirá nova execução.
+Na verificação anterior à implementação, realizada em 21/10/2026 com `mvnw verify`, passaram 22 testes e os controles JaCoCo, com 729 instruções, 11 branches e 168 linhas cobertas nas 25 classes analisadas. A base foi novamente verificada no estudo de 28/10/2026 antes da alteração. Após o recorte, `clean verify` passou com 25 testes e cobertura integral de 682 instruções, 11 branches e 144 linhas nas 25 classes analisadas; detalhes e artefatos estão no [registro de validação](evidencias/desafio-1/validacao.md).
 
-Os testes de persistência PostgreSQL serão executados no CI descartável com o perfil Maven `postgres-it`, conforme [DevOps e Jenkins](../DevOps-Jenkins.md). A validação da integração usará os smoke checks e o Cypress existentes em HOMOL. Os relatórios deverão identificar se incluem apenas testes locais ou também PostgreSQL e navegador.
+O CI descartável executou o perfil Maven `postgres-it`: 25 testes da suíte normal e um teste PostgreSQL passaram. A integração em HOMOL passou nos cinco smoke checks, na validação das duas regras de alerta do Prometheus e nos dez cenários Cypress. Os comandos Compose foram executados diretamente, conforme [DevOps e Jenkins](../DevOps-Jenkins.md); o job Jenkins não foi disparado. Durante essa validação, os Dockerfiles receberam tentativas limitadas nos downloads/empacotamento para tolerar interrupções de rede, sem alterar o conjunto de serviços, os testes ou contratos da aplicação.
 
 ### Continuidade no Desafio 2
 
@@ -246,25 +260,25 @@ A proteção das dependências técnicas do caso de uso será decidida em ADR pr
 
 Na ampliação das fronteiras, deverão ser tratados o acesso de `AlunoService` ao histórico e os relacionamentos JPA de `ConclusaoEntity` com aluno e curso. Mover essas entidades entre pacotes sem rever os acessos continuaria expondo detalhes internos. A escolha do mapeamento e da preservação das chaves estrangeiras deverá ser explícita antes dessa mudança.
 
-## 10 Evidências a versionar no Git
+## 10 Evidências para revisão no Git
 
-O registro deste desafio será mantido neste README, incluindo ADR-001 e C4. A implementação deverá acrescentar código, testes e evidências rastreáveis.
+O registro deste desafio é mantido neste README, incluindo ADR-001 e C4. A alteração inclui código, testes e relatos de evidência para revisão. A base é identificada pelo commit anterior; o estado posterior é o diff desta alteração, ainda sem commit próprio.
 
-| Evidência | Local previsto | Conteúdo mínimo |
+| Evidência | Local | Conteúdo mínimo |
 | --- | --- | --- |
-| Comparação de dependências | `docs/arquitetura/evidencias/desafio-1/dependencias.md` | Revisões antes/depois, consumidores da regra, acessos internos proibidos e resultado da verificação arquitetural. |
-| Resultado dos testes | `docs/arquitetura/evidencias/desafio-1/validacao.md` | Data, revisão Git, ambiente, comandos, totais de testes, cobertura e identificação das suítes executadas. |
+| Comparação de dependências | [dependencias.md](evidencias/desafio-1/dependencias.md) | Base antes/depois, consumidores da regra, acessos internos proibidos e resultado da verificação arquitetural. |
+| Resultado dos testes | [validacao.md](evidencias/desafio-1/validacao.md) | Data, revisão Git, ambiente, comandos, totais de testes, cobertura e identificação das suítes executadas. |
 | Rejeição de violação arquitetural | No registro de dependências | Referência introduzida apenas no experimento, falha produzida e confirmação de sua remoção. |
 | Execução da aplicação | No registro de validação | Fluxo de conclusão, persistência, endpoints preservados e unidade de implantação do Core. |
 | Artefatos completos | Build Jenkins ou pasta local `artifacts/` | Relatórios JUnit/JaCoCo, logs e evidências Cypress quando executado; registrar links ou identificadores no relato versionado. |
 
-As pastas de evidência serão criadas durante a execução. Relatórios gerados permanecem sujeitos ao `.gitignore`; o relato técnico e as evidências selecionadas devem permitir localizar o build correspondente. Capturas de tela complementam os resultados e a comparação, sem substituir a identificação do experimento.
+Os relatos de evidência estão em `docs/arquitetura/evidencias/desafio-1/`; os logs e relatórios completos estão na pasta local ignorada `artifacts/desafio-1/` e em `target/`. Capturas de tela podem complementar os resultados, sem substituir a identificação do experimento.
 
 ## 11 Conclusão da decisão e critérios de encerramento
 
-A equipe adota a evolução para monólito modular por sua compatibilidade com o legado e com a capacidade operacional atual. O primeiro recorte deverá tornar explícito o acesso às regras de aprovação e recompensa, mantendo o fluxo transacional, a API e os cenários ATDD.
+A equipe adota a evolução para monólito modular por sua compatibilidade com o legado e com a capacidade operacional atual. O primeiro recorte torna explícito o acesso às regras de aprovação e recompensa, mantendo o fluxo transacional, a API e os cenários ATDD.
 
-O Desafio 1 estará tecnicamente validado quando o fluxo real utilizar o contrato modular, as dependências forem verificadas automaticamente, a regressão passar e as evidências estiverem registradas no Git. Até essa execução, encapsulamento e preservação do comportamento são resultados esperados.
+O primeiro recorte atende aos critérios técnicos de encerramento: contrato usado no fluxo real, verificação automatizada de dependências, rejeição de violações demonstrada, regressão funcional aprovada e evidências revisáveis. Os [resultados locais e em Docker/HOMOL](evidencias/desafio-1/validacao.md) delimitam a validação desta alteração; a publicação no Git depende do commit e da revisão pela equipe. A modularização completa do Core e a capacidade para 100.000 usuários não são resultados deste recorte.
 
 A extração de Ranking ou de outra capacidade será revista mediante evidência de gargalo, necessidade de deploy independente ou isolamento. A conclusão do mini-lab deverá registrar o que foi demonstrado e o que ainda depende de medição.
 
@@ -279,7 +293,7 @@ A extração de Ranking ou de outra capacidade será revista mediante evidência
 | Alternativas | Camadas atuais, monólito modular e decomposição seletiva em serviços. |
 | ADR | ADR-001 — Evoluir o Core para monólito modular. |
 | C4 | Visão de Container com frontend, Core único e banco; Component detalhado no Desafio 2. |
-| Evidência | Mini-lab das regras de aprovação e recompensa, comparação de dependências, verificação arquitetural e regressão; execução pendente. |
+| Evidência | [Dependências e rejeição de violações](evidencias/desafio-1/dependencias.md); [validação local e limitações](evidencias/desafio-1/validacao.md). |
 
 ### Referências
 

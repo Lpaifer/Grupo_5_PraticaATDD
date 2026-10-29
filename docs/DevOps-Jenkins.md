@@ -20,7 +20,7 @@ O `Jenkinsfile` suporta agentes Windows (`bat`) e Linux/macOS (`sh`). Todas as f
 
 | Etapa | Critério de aprovação | Evidência |
 |---|---|---|
-| Backend | 21 testes JUnit e um IT PostgreSQL aprovados | Surefire/Failsafe, JAR |
+| Backend | 25 testes da suíte normal e um IT PostgreSQL aprovados após o mini-lab B1 | Surefire/Failsafe, JAR |
 | Cobertura | Zero instruções, branches ou linhas descobertos nas classes analisadas | JaCoCo HTML/CSV/XML |
 | Frontend | Oxlint/ESLint sem erros e build Vite concluído | Console do build |
 | Deploy | Banco, API, frontend, Prometheus e Grafana prontos | Estado dos serviços e logs |
@@ -30,6 +30,8 @@ O `Jenkinsfile` suporta agentes Windows (`bat`) e Linux/macOS (`sh`). Todas as f
 O parâmetro `DEPLOY_HOMOL=false` executa CI e gera as imagens, sem implantação/testes de homologação. HOMOL usa um lock para impedir deployments simultâneos entre jobs no mesmo Jenkins. As imagens têm tag `BUILD_NUMBER-commit`, e relatórios antigos são removidos antes do checkout. O job guarda 15 builds e artefatos dos últimos 10.
 
 Falhas reprovam o pipeline. Se uma falha ocorrer depois do deploy, o candidato permanece em HOMOL para diagnóstico; não há rollback automático nem promoção para produção. O banco descartável de CI é removido ao final; os volumes de HOMOL são preservados. Os dados de Cypress usam nomes exclusivos e permanecem no banco de homologação.
+
+Os Dockerfiles de Java, frontend e Cypress fazem até três tentativas dos comandos de preparação/empacotamento, com intervalo de três segundos, para tolerar downloads interrompidos de dependências. Se todas falharem, o build é reprovado. Os comandos de testes mantêm seus critérios de falha; o Cypress mantém a configuração de repetição já definida em `cypress.config.js`.
 
 ## Arquivos
 
@@ -124,7 +126,7 @@ docker cp grupo5-ci-backend:/workspace/target/. artifacts/backend/
 docker compose -p grupo5-ci-local -f docker-compose.ci.yml down --volumes --remove-orphans
 ```
 
-No PowerShell, crie a pasta com `New-Item -ItemType Directory -Force artifacts/backend`; no Unix, `mkdir -p artifacts/backend`. Essa limpeza remove apenas o projeto descartável `grupo5-ci-local`. O comando Maven sem o perfil (`.\mvnw.cmd verify` ou `./mvnw verify`) continua funcionando sem Docker e executa os 21 testes normais.
+No PowerShell, crie a pasta com `New-Item -ItemType Directory -Force artifacts/backend`; no Unix, `mkdir -p artifacts/backend`. Essa limpeza remove apenas o projeto descartável `grupo5-ci-local`. O comando Maven sem o perfil (`.\mvnw.cmd verify` ou `./mvnw verify`) continua funcionando sem Docker e executa os 25 testes normais após o mini-lab B1.
 
 ## Executar HOMOL sem Jenkins
 
@@ -166,6 +168,8 @@ Em Prometheus, consulte `up{job="grupo5-api"}`: o valor esperado é `1`. As regr
 ## Fontes técnicas
 
 A [validação local de 12/10/2026](DevOps-validacao.md) registra os resultados e os artefatos gerados.
+
+A [validação do mini-lab B1 em 28/10/2026](arquitetura/evidencias/desafio-1/validacao.md) registra a execução direta dos comandos de CI/HOMOL após a modularização: 25 testes normais, um IT PostgreSQL e dez cenários Cypress aprovados, com cobertura integral e smoke checks. O job Jenkins não foi disparado nessa execução.
 
 - [Sintaxe de pipeline declarativo Jenkins](https://www.jenkins.io/doc/book/pipeline/syntax/)
 - [Jenkins em Docker e Docker-in-Docker com TLS](https://www.jenkins.io/doc/book/installing/docker/)
