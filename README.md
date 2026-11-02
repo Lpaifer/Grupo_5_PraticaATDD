@@ -6,6 +6,133 @@ Projeto desenvolvido para a disciplina de DevOps & QA utilizando os conceitos de
 
 O estudo de caso é uma plataforma de educação continuada gamificada. Alunos dos planos Básico ou Premium concluem cursos, recebem três cursos adicionais a cada conclusão aprovada (curso concluído e nota final de pelo menos 7,0) e podem consultar o histórico de tentativas e liberações acumuladas.
 
+## B1 — Architecture Lab
+
+A B1 dá continuidade ao MVP de Educação Continuada Gamificada da AC1 e reúne seis desafios arquiteturais. O trabalho atual corresponde ao **Desafio 1 — Drivers e Evolução do Core**. O objetivo é justificar a evolução com requisitos e evidências, e não escolher uma tecnologia apenas por ser moderna.
+
+```text
+AC1 → B1
+   ↓
+RF / RNF
+   ↓
+ASR + RPC
+   ↓
+Alternativas e Trade-offs
+   ↓
+ADR
+   ↓
+C4
+   ↓
+Implementação / Evidência
+```
+
+Este README apresenta o resumo executivo. O raciocínio completo, o ADR e os modelos estão na [documentação arquitetural B1](docs/arquitetura/README.md).
+
+### Evolução a partir da AC1
+
+A AC1 já possuía Java 26, Spring Boot, Vue.js, API REST, PostgreSQL, H2, JUnit, JaCoCo, Docker e Swagger/OpenAPI. A B1 reaproveita esse produto funcional e evolui sua arquitetura de forma incremental.
+
+### Desafio 1 — Drivers e Evolução do Core
+
+O cenário considera crescimento de aproximadamente 1.000 para até 100.000 usuários e evolução para capacidades como Ranking, conquistas, recompensas, IA, notificações, eventos, IoT e observabilidade. Esses números são uma premissa do exercício, não uma capacidade comprovada por teste de carga. As capacidades futuras não estão todas implementadas; a infraestrutura de observabilidade já integra HOMOL.
+
+O desafio é decidir a arquitetura macro antes de decompor o sistema, comparando Monólito em Camadas, Monólito Modular e decomposição seletiva em serviços.
+
+### RFs analisados
+
+| ID | Requisito |
+| --- | --- |
+| RF01 | Ranking |
+| RF02 | Conquistas e gamificação |
+| AC1-01 | Cadastro e consulta de alunos |
+| AC1-02 | Cadastro e listagem de cursos |
+| AC1-03 | Registro de conclusões e aprovação |
+| AC1-04 | Acúmulo de recompensas e histórico |
+
+### RNFs analisados e ASRs selecionados
+
+Os requisitos não funcionais (RNFs) analisados foram **Manutenibilidade, Escalabilidade, Desempenho, Testabilidade e Complexidade operacional**. Três foram priorizados como requisitos arquiteturalmente significativos (ASRs) para esta decisão:
+
+| ASR | Por que orienta a arquitetura |
+| --- | --- |
+| Manutenibilidade | Capacidades evoluem em ritmos diferentes; fronteiras explícitas diminuem acoplamento e impacto de mudanças. |
+| Escalabilidade | Principalmente Ranking pode apresentar carga diferente e futuramente exigir estratégia própria de escala. |
+| Complexidade operacional | A equipe de seis integrantes precisa evitar o custo prematuro de deploys distribuídos, rede, observabilidade e tratamento de falhas. |
+
+Nem todo RNF analisado se tornou automaticamente um ASR. Desempenho e testabilidade continuam relevantes à validação, mas não foram selecionados entre os três direcionadores desta decisão macro.
+
+### RPCs
+
+As restrições e premissas de contexto são: Core atual em Java/Spring Boot, equipe de seis desenvolvedores, banco relacional e legado funcional da AC1. A evolução deve ser incremental, evitando uma reescrita completa apenas para aplicar um padrão arquitetural.
+
+### Alternativas e Trade-offs
+
+| Alternativa | Benefícios | Custos / riscos |
+| --- | --- | --- |
+| Monólito em Camadas | Simplicidade e continuidade | Fronteiras de negócio pouco explícitas |
+| Monólito Modular | Fronteiras claras, um deploy e evolução incremental | Processo e banco ainda compartilhados |
+| Decomposição seletiva em serviços | Escala e deploy independentes | Rede, observabilidade e maior complexidade operacional |
+
+### Decisão arquitetural
+
+**Decisão: evoluir o Core para Monólito Modular.**
+
+O Core continua sendo uma única aplicação Spring Boot, com um único deploy. As capacidades passam a ter contratos internos mais claros e chamadas locais, sem introduzir comunicação distribuída. Isso prepara uma futura extração somente se métricas reais a justificarem.
+
+### ADR-001 — Evolução do Core
+
+**Contexto:** o MVP funcional da AC1 precisa evoluir para novas capacidades e para o crescimento previsto no case, respeitando a equipe de seis pessoas e a preservação do legado.
+
+**Decisão:** Monólito em Camadas → Monólito Modular, orientada pelos ASRs de Manutenibilidade, Escalabilidade e Complexidade operacional.
+
+**Consequências positivas:** fronteiras mais explícitas, menor acoplamento, evolução incremental e possibilidade de futura extração. **Trade-offs:** deploy conjunto, processo e banco compartilhados; os módulos ainda não têm escala independente.
+
+**Gatilho de revisão:** avaliar a extração de uma capacidade quando métricas de carga, latência, throughput, necessidade de escala ou frequência de deploy justificarem. Consulte o [registro arquitetural detalhado](docs/arquitetura/README.md) para o ADR completo.
+
+### C4
+
+| Nível | Visão da solução |
+| --- | --- |
+| Context | O usuário utiliza a plataforma de Educação Continuada Gamificada. |
+| Container | Frontend Vue, Core Java/Spring Boot, PostgreSQL e infraestrutura de observabilidade. O Core permanece um único container de aplicação. |
+| Component | O Core começa a organizar capacidades por módulos; o primeiro recorte é `gamificacao`. |
+| Code | Separação entre o contrato público `gamificacao.api` e os detalhes de implementação em `gamificacao.internal`. |
+
+A [documentação arquitetural](docs/arquitetura/README.md) apresenta a visão de Container e o detalhamento do primeiro recorte. A visão de Component será aprofundada no Desafio 2; a tabela acima resume os níveis sem representar modelos completos de todos eles.
+
+### Implementação do primeiro recorte modular
+
+O primeiro recorte implementado é **Gamificação / aprovação e recompensa**:
+
+```text
+gamificacao
+├── api
+│   ├── AvaliarConclusao
+│   ├── DadosConclusao
+│   └── ResultadoConclusao
+└── internal
+    └── dominio
+        └── PoliticaConclusao
+```
+
+`gamificacao.api` é o contrato público; `gamificacao.internal` contém os detalhes que o código externo não deve acessar diretamente. A fronteira é verificada por testes ArchUnit; o nome do pacote não impede, por si só, acessos pelo compilador. `ConclusaoService` consome o contrato público, enquanto a persistência continua no serviço existente e a transação permanece local. Esse primeiro recorte não significa que todo o Core já foi modularizado.
+
+### Evidência do Desafio 1
+
+Hipótese do mini-lab:
+
+> É possível criar uma fronteira modular para a regra de gamificação sem alterar o comportamento funcional da AC1 e sem introduzir comunicação distribuída?
+
+Os testes ArchUnit verificam que código externo não acessa `gamificacao.internal`, que o módulo não depende de Spring, HTTP ou JPA e que os objetos de dados do contrato público não dependem da implementação interna.
+
+Consulte a [comparação de dependências](docs/arquitetura/evidencias/desafio-1/dependencias.md) e a [validação do mini-lab](docs/arquitetura/evidencias/desafio-1/validacao.md) para comandos, resultados e limites da verificação.
+
+### Validação
+
+A validação documentada em **28/10/2026** registra **25 testes da suíte principal**, incluindo ArchUnit, **um teste de integração PostgreSQL** e **10 cenários Cypress**. Também registra cobertura JaCoCo integral das classes analisadas, lint e build do Vue e smoke tests em HOMOL.
+
+Esses são resultados históricos documentados, não uma nova execução feita nesta atualização do README. A validação utilizou HOMOL diretamente via Compose; não comprova uma execução do job Jenkins nem capacidade para 100.000 usuários.
+
 ## Executar e explorar a API
 
 Com Java 26 configurado em `JAVA_HOME`, execute `./mvnw spring-boot:run` (Windows: `.\mvnw.cmd spring-boot:run`). A aplicação inicia na porta 8080 com banco H2 em memória.
@@ -46,9 +173,53 @@ Para desenvolver o frontend fora do Docker, execute `npm ci` e `npm run dev` den
 
 [Evidência da execução com PostgreSQL e capturas do pgAdmin](docs/Docker-PostgreSQL.md).
 
-## Verificação atual
+## Pipeline Jenkins, HOMOL e observabilidade
 
-Em 13/09/2026, `./mvnw clean verify` passou com **19 testes**. O JaCoCo registrou **100% das instruções (729/729)**, **100% dos branches (11/11)** e **100% das linhas (168/168)** nas 25 classes analisadas. A classe `Grupo5PraticaAtddApplication` é excluída do relatório porque contém apenas o método `main` de inicialização, sem regra de negócio; a inicialização da aplicação é verificada nos testes de contexto e na execução Docker. A fase `verify` falha se surgir qualquer instrução, branch ou linha sem cobertura nas classes analisadas. O relatório detalhado é gerado localmente em `target/site/jacoco/index.html`. As porcentagens nos documentos individuais retratam etapas anteriores do ciclo RED/GREEN/BLUE. [Capturas do JUnit e Maven](docs/Testes.md) e [evidência da cobertura atual](docs/Cobertura-atual.md).
+O [Jenkinsfile](Jenkinsfile) versiona o fluxo de checkout, verificação do Docker, testes JUnit com PostgreSQL real, cobertura JaCoCo, lint/build Vue, build das imagens, deploy em homologação, smoke checks e testes Cypress. Falhas interrompem a aprovação do pipeline. Relatórios JUnit, cobertura, vídeos, screenshots e logs são publicados no build.
+
+```text
+Checkout
+   ↓
+Preflight
+   ↓
+JUnit + PostgreSQL + JaCoCo
+   ↓
+Lint + Build Vue
+   ↓
+Build Docker
+   ↓
+Deploy HOMOL
+   ↓
+Smoke Tests
+   ↓
+Cypress E2E
+```
+
+As etapas de homologação dependem da opção `DEPLOY_HOMOL` do pipeline.
+
+O ambiente de homologação tem banco e volumes próprios, Prometheus e Grafana com datasource e dashboard provisionados. O ambiente de desenvolvimento continua em `compose.yaml`.
+
+O Prometheus coleta as métricas configuradas e o Grafana as apresenta com datasource e dashboard provisionados. As configurações ficam em [prometheus/](prometheus/) e [grafana/](grafana/). Essas evidências de operação apoiarão as decisões arquiteturais dos próximos desafios; a presença das ferramentas, por si só, não demonstra capacidade de escala.
+
+```sh
+# Jenkins com Docker interno e plugins necessários
+docker compose -f docker-compose.jenkins.yml up --build -d
+
+# Alternativa: executar HOMOL diretamente, sem Jenkins
+docker compose -f docker-compose.homol.yml up --build -d --wait db api frontend pgadmin prometheus grafana
+docker compose -f docker-compose.homol.yml --profile checks run --build --rm smoke
+docker compose -f docker-compose.homol.yml --profile e2e run --build --rm cypress
+```
+
+Jenkins: <http://localhost:8080/>. HOMOL: frontend <http://localhost:5174/>, API <http://localhost:8082/>, pgAdmin <http://localhost:5051/>, Prometheus <http://localhost:9091/> e Grafana <http://localhost:3001/>. Se você já usa um Jenkins instalado, configure nele o job conforme a documentação. Use o Jenkins em Docker ou a HOMOL manual por vez, pois compartilham as portas externas de HOMOL.
+
+Consulte [DevOps e pipeline Jenkins](docs/DevOps-Jenkins.md) para desbloquear o Jenkins, criar o job a partir do Git, configurar credenciais e portas, executar CI localmente e coletar os relatórios. A implementação foi inspirada no [projeto Jogo Enigma V5.1](https://github.com/Lpaifer/jogo-enigma-api-v1-A2-portavel-v5.1), adaptada para Spring Boot/Java 26 e Vue deste repositório.
+
+## Evidência histórica de testes
+
+Os resultados do fluxo novo estão em [Validação DevOps — 12/10/2026](docs/DevOps-validacao.md), incluindo JUnit, PostgreSQL real, Cypress e observabilidade. Os números abaixo preservam a evidência anterior.
+
+Em 14/09/2026, `./mvnw clean verify` passou com **20 testes**. O JaCoCo registrou **100% das instruções (729/729)**, **100% dos branches (11/11)** e **100% das linhas (168/168)** nas 25 classes analisadas. A classe `Grupo5PraticaAtddApplication` é excluída do relatório porque contém apenas o método `main` de inicialização, sem regra de negócio; a inicialização da aplicação é verificada nos testes de contexto e na execução Docker. A fase `verify` falha se surgir qualquer instrução, branch ou linha sem cobertura nas classes analisadas. O relatório detalhado é gerado localmente em `target/site/jacoco/index.html`. As porcentagens nos documentos individuais retratam etapas anteriores do ciclo RED/GREEN/BLUE. [Capturas do JUnit e Maven](docs/Testes.md) e [evidência da cobertura atual](docs/Cobertura-atual.md).
 
 ## Integrantes
 
@@ -66,12 +237,15 @@ Em 13/09/2026, `./mvnw clean verify` passou com **19 testes**. O JaCoCo registro
 - [Lucas Paifer](docs/Lucas%20Paifer.md)
 - [Matheus Nicolas Arizono Ywamoto](docs/MatheusYwamoto.md)
 - [Matheus Marcolino](docs/MatheusMarcolino.md)
+- [Rafael Amorim](docs/Rafael.md)
 
 ## Cenários BDD identificados
 
 **US escolhida pelo grupo — Aluno Básico:** Como aluno assinante do plano básico, quero ter acesso liberado a mais 3 cursos ao concluir um curso com média igual ou superior a 7,0, para continuar avançando nos estudos e aproveitar melhor minha assinatura.
 
-As [propostas de histórias de usuário e a rastreabilidade US → BDD → teste](docs/US-e-rastreabilidade.md) estão reunidas em uma página própria. As propostas foram derivadas dos BDD já existentes e precisam da validação de autoria pelos integrantes. A autoria da US escolhida ainda precisa ser informada.
+Cada integrante definiu uma User Story no Product Backlog. Para a prática ATDD, o grupo selecionou uma das seis histórias: a User Story **Aluno Básico**, de **Rafael Amorim**, como base comum. A partir dela, cada integrante elaborou um cenário BDD individual para explorar diferentes condições da mesma regra de negócio e executou seu ciclo ATDD correspondente. Consulte a [documentação de User Stories e rastreabilidade US → BDD → teste](docs/US-e-rastreabilidade.md).
+
+O documento vinculado preserva a rastreabilidade dos cenários, mas sua descrição de origem e autoria das User Stories ainda precisa ser alinhada à informação corrigida acima.
 
 | Integrante | Cenário documentado |
 | --- | --- |
@@ -80,4 +254,4 @@ As [propostas de histórias de usuário e a rastreabilidade US → BDD → teste
 | Lucas Paifer | [Liberar três cursos com média exatamente 7,0](docs/Lucas%20Paifer.md) |
 | Matheus Nicolas Arizono Ywamoto | [Liberar cursos após refazer um curso reprovado](docs/MatheusYwamoto.md) |
 | Matheus Marcolino | [Não liberar cursos com média abaixo de 7,0](docs/MatheusMarcolino.md) |
-| Rafael Amorim | Cenário individual ainda não localizado no repositório |
+| Rafael Amorim | [Liberar três cursos com média 9,0](docs/Rafael.md) |
