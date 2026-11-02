@@ -8,7 +8,27 @@ O estudo de caso é uma plataforma de educação continuada gamificada. Alunos d
 
 ## Evolução arquitetural B1
 
+**Escopo desta entrega: até o Desafio 2 da B1**, com Ranking e Mock Objects/Mockito. Os dois mini-labs estão implementados e validados no escopo descrito abaixo; Desafios 3–6 ficam fora desta entrega. A documentação segue a cadeia **RF → RNF → ASR → RPC → Alternativas/Trade-offs → ADR → C4 → Evidência**.
+
 A [solução do Desafio 1 e o registro arquitetural B1](docs/arquitetura/README.md) descrevem a evolução do Core para monólito modular, seguindo o exemplo da professora e adaptando as fronteiras ao projeto. O primeiro recorte encapsula aprovação e recompensa em `gamificacao`, com contrato Java público, regras internas e testes ArchUnit das dependências. A persistência continua no serviço existente, na mesma transação. A validação em 28/10/2026 aprovou 25 testes da suíte normal, um teste PostgreSQL e dez cenários Cypress, com cobertura integral e smoke checks em HOMOL. Consulte a [comparação de dependências](docs/arquitetura/evidencias/desafio-1/dependencias.md) e a [validação do mini-lab](docs/arquitetura/evidencias/desafio-1/validacao.md) para comandos, resultados e limites da verificação.
+
+O **Desafio 2** usa Ranking como mini-lab: `GET /api/ranking` e painel Vue, com **Ports & Adapters aplicado seletivamente à dependência de leitura do Ranking**. O caso de uso depende de uma porta, implementada pelo adapter JPA e substituída por Mockito/Fake nos testes. Classificação Java pura, ArchUnit, ADR-002 e C4 Component registram e protegem esse recorte; o sistema inteiro não foi convertido para Hexagonal.
+
+No Ranking, **pontuação = quantidade de conclusões aprovadas**. O fluxo existente aprova quando `concluido = true` e `nota >= 7`; o Ranking lê esse resultado persistido. A ordem é decrescente por aprovações, com desempate por `alunoId` crescente. Reprovações e cursos incompletos não pontuam; aprovações repetidas contam, inclusive no mesmo curso; alunos sem aprovação não aparecem. Veja o [contrato da API](docs/API_CONTRACT.md#ranking--get-apiranking).
+
+Mockito fornece o Mock Object controlado pelo teste (`@Mock`, `when`, `verify` e `verifyNoMoreInteractions`); o Fake é uma implementação simplificada em memória; o adapter JPA é a implementação real de infraestrutura. A [evidência de substituição](docs/arquitetura/evidencias/desafio-2/dependencias.md#substituição-nos-testes) demonstra o mesmo caso de uso com essas implementações.
+
+| Cadeia acadêmica | Desafio 1 — arquitetura macro | Desafio 2 — organização interna |
+| --- | --- | --- |
+| RF/RNF/ASR/RPC | [RFs](docs/arquitetura/README.md#2-rfs-afetados), [RNFs e três ASRs](docs/arquitetura/README.md#3-rnfs-e-seleção-dos-asrs), [RPCs](docs/arquitetura/README.md#4-rpcs-e-consequências) | [RFs](docs/arquitetura/README.md#132-rfs-afetados), [RNFs e três ASRs](docs/arquitetura/README.md#133-rnfs-e-seleção-dos-asrs), [RPCs](docs/arquitetura/README.md#134-rpcs) |
+| Alternativas e decisão | [Camadas × modular × serviços seletivos](docs/arquitetura/README.md#5-alternativas-e-trade-offs); monólito modular, uma aplicação/deploy | [Acesso direto × inversão seletiva × reestruturação ampla](docs/arquitetura/README.md#135-alternativas-e-trade-offs); Ports & Adapters seletivo |
+| ADR | [ADR-001](docs/arquitetura/README.md#7-adr-001-evolução-do-core-para-monólito-modular) | [ADR-002](docs/arquitetura/README.md#137-adr-002--inverter-a-dependência-de-persistência-do-ranking-com-ports--adapters) |
+| C4 | [Container](docs/arquitetura/README.md#8-c4-na-visão-de-container) | [Component do Core](docs/arquitetura/README.md#138-c4-component-do-core--recorte-ranking) |
+| Microsolução e Git | [Gamificação, ArchUnit e dependências](docs/arquitetura/evidencias/desafio-1/dependencias.md), [rastreabilidade Git](docs/arquitetura/README.md#10-evidências-para-revisão-no-git) | [Porta, adapter, regra, Mockito/Fake e ArchUnit](docs/arquitetura/evidencias/desafio-2/dependencias.md), [validação e snapshot Git](docs/arquitetura/evidencias/desafio-2/validacao.md) |
+
+A [validação final do Desafio 2](docs/arquitetura/evidencias/desafio-2/validacao.md), em 02/11/2026, confirmou 38 testes normais + 1 IT PostgreSQL, 100% das métricas/classes analisadas pelo JaCoCo atual (31 classes; 798 instruções, 13 branches e 169 linhas), lint/build, cinco smoke checks e Jenkins Build #2 com Cypress 12/12 em HOMOL/PostgreSQL. O Jenkins executou snapshot local temporário, não commit oficial da branch. O relatório distingue tentativas anteriores, repetição no Cypress e limites dos artefatos; os detalhes arquiteturais permanecem no registro cumulativo.
+
+Resultado do pipeline: **Jenkins Build #2 — SUCCESS**, com **39 execuções backend** e Cypress **12 passing, 0 failing** (10 Gamificação + 2 Ranking). A observabilidade confirmou `up{job="grupo5-api"} = 1`, configuração Prometheus e duas regras de alerta válidas, além do Grafana saudável com datasource e dashboard provisionados. O snapshot de laboratório foi `2f1b0cd`; a branch real permaneceu em `317b143` durante o gate, com as alterações ainda sem commit oficial.
 
 ## Executar e explorar a API
 
@@ -72,7 +92,7 @@ Consulte [DevOps e pipeline Jenkins](docs/DevOps-Jenkins.md) para desbloquear o 
 
 ## Evidência histórica de testes
 
-Os resultados do fluxo novo estão em [Validação DevOps — 12/10/2026](docs/DevOps-validacao.md), incluindo JUnit, PostgreSQL real, Cypress e observabilidade. Os números abaixo preservam a evidência anterior.
+Os resultados históricos da esteira estão em [Validação DevOps — 12/10/2026](docs/DevOps-validacao.md). O resultado atual desta entrega está na [validação final do Desafio 2 — 02/11/2026](docs/arquitetura/evidencias/desafio-2/validacao.md). Os números abaixo preservam a evidência anterior.
 
 Em 14/09/2026, `./mvnw clean verify` passou com **20 testes**. O JaCoCo registrou **100% das instruções (729/729)**, **100% dos branches (11/11)** e **100% das linhas (168/168)** nas 25 classes analisadas. A classe `Grupo5PraticaAtddApplication` é excluída do relatório porque contém apenas o método `main` de inicialização, sem regra de negócio; a inicialização da aplicação é verificada nos testes de contexto e na execução Docker. A fase `verify` falha se surgir qualquer instrução, branch ou linha sem cobertura nas classes analisadas. O relatório detalhado é gerado localmente em `target/site/jacoco/index.html`. As porcentagens nos documentos individuais retratam etapas anteriores do ciclo RED/GREEN/BLUE. [Capturas do JUnit e Maven](docs/Testes.md) e [evidência da cobertura atual](docs/Cobertura-atual.md).
 

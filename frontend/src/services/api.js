@@ -68,3 +68,7 @@ export {
   listarAlunos,
   listarCursos,
 }
+
+export async function listarRanking() {
+  return apiRequest('/api/ranking')
+}

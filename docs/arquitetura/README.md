@@ -4,7 +4,11 @@ Registro cumulativo das decisões arquiteturais da plataforma de Educação Cont
 
 **Desafio 1 — decisão:** evoluir o Core de monólito em camadas para monólito modular, mantendo uma aplicação Java/Spring Boot e banco relacional. **Situação em 28/10/2026:** primeiro recorte de aprovação e recompensa implementado e validado localmente e em Docker/HOMOL, com contrato público e verificação arquitetural. A [comparação de dependências](evidencias/desafio-1/dependencias.md) e a [validação](evidencias/desafio-1/validacao.md) registram 25 testes da suíte normal, um teste PostgreSQL e dez cenários Cypress aprovados, além de cobertura integral e smoke checks. A modularização completa de Alunos, Cursos e Gamificação continua como evolução futura.
 
-O formato e a decisão seguem o exemplo orientativo da professora. A adaptação utiliza as funcionalidades existentes no repositório e acrescenta critérios verificáveis para as dependências entre módulos. Os Desafios 2 a 6 terão seus próprios registros quando forem discutidos.
+O formato e a decisão seguem o exemplo orientativo da professora. A adaptação utiliza as funcionalidades existentes no repositório e acrescenta critérios verificáveis para as dependências entre módulos. O Desafio 2 está registrado ao final deste documento. Os Desafios 3 a 6 terão seus próprios registros quando forem discutidos.
+
+**Situação em 02/11/2026 — Desafio 2:** Ranking implementado com Ports & Adapters aplicado seletivamente à dependência de leitura. O [gate final](evidencias/desafio-2/validacao.md) confirmou 38 testes normais + 1 IT PostgreSQL, JaCoCo, HOMOL/observabilidade e Jenkins Build #2 com Cypress 12/12. O Jenkins utilizou snapshot temporário; a branch real permanece sem commit das alterações. Tentativas anteriores e limites da evidência estão discriminados no relatório.
+
+As seções 1 a 12 preservam o registro do Desafio 1 em 28/10/2026. Afirmações de capacidade futura nessas seções descrevem aquele momento; a seção 13 registra o estado posterior.
 
 ## 1 Leitura do cenário
 
@@ -12,7 +16,7 @@ O enunciado prevê crescimento de aproximadamente 1.000 para até 100.000 usuár
 
 Na base anterior ao mini-lab, o Core estava organizado por camadas técnicas: `api`, `service`, `domain`, `entity` e `repository`. O primeiro recorte acrescenta o módulo `gamificacao` e mantém as demais camadas em transição. Alunos, cursos e conclusões compartilham aplicação e banco. A aprovação exige curso concluído e nota mínima de 7,0; cada aprovação acrescenta três cursos ao saldo, preservando todas as tentativas no histórico.
 
-O case B1 também menciona Ranking, moedas, badges, múltiplas instituições, IA, notificações e IoT. Essas capacidades ainda não estão implementadas no MVP. A modularização inicial utiliza o fluxo existente de conclusão e recompensa; a fronteira de Ranking será definida quando seus requisitos forem detalhados.
+O case B1 também menciona Ranking, moedas, badges, múltiplas instituições, IA, notificações e IoT. No momento do Desafio 1, essas capacidades ainda não estavam implementadas no MVP. A modularização inicial utilizou o fluxo existente de conclusão e recompensa. Ranking foi implementado e utilizado como recorte do Desafio 2; as demais capacidades citadas continuam fora deste recorte.
 
 **Pergunta do Tech Lead:** quais fronteiras internas permitem evoluir o produto com menor acoplamento, mantendo uma operação compatível com seis desenvolvedores? Há evidência de que uma capacidade precise de escala ou deploy independente agora?
 
@@ -50,6 +54,9 @@ RNF é um requisito não funcional. ASR é o requisito arquiteturalmente signifi
 | ASR-01 — Manutenibilidade | RF02 e evolução AC1 | Módulos com contratos públicos e implementação encapsulada | [Dependências e rejeição de violações](evidencias/desafio-1/dependencias.md), testes de regressão | Validado no primeiro recorte; demais capacidades em transição |
 | ASR-02 — Escalabilidade | RF01 e cenário de crescimento | Preservar possibilidade de extração seletiva sem distribuir o Core agora | Registrar fronteiras e gatilhos de revisão; capacidade dependerá de ensaio de carga posterior | Premissa de evolução; capacidade não demonstrada |
 | ASR-03 — Complexidade operacional | RF01/RF02 e equipe de seis pessoas | Manter uma aplicação Core, uma imagem e um deploy do backend | [Execução local e Docker/HOMOL](evidencias/desafio-1/validacao.md), com o mesmo conjunto de serviços | Validado no primeiro recorte; uma aplicação Core, com smoke e Cypress aprovados |
+| ASR-04 — Manutenibilidade | Desafio 2; RF01 e preservação de RF02 | Dependência de leitura atrás de contrato explícito | [Porta, adapter e ArchUnit](evidencias/desafio-2/dependencias.md) | Validado localmente no recorte Ranking |
+| ASR-05 — Testabilidade | Desafio 2; RF01 | Executar o caso de uso sem banco/Spring Data | [Mockito e fake](evidencias/desafio-2/dependencias.md) | Validado localmente; integração real também preservada |
+| ASR-06 — Modificabilidade | Desafio 2; RF01 | Trocar fonte de dados sem mudar classificação ou HTTP | [Substituição de adapter e regressão](evidencias/desafio-2/dependencias.md) | Substituição por mock/fake demonstrada; novas fontes produtivas não implementadas |
 
 Os próximos desafios deverão atualizar esta matriz. Um RNF pode tornar-se ASR em outra decisão quando influenciar uma fronteira ou mecanismo específico.
 
@@ -95,7 +102,7 @@ O saldo pertence aos dados de Alunos, enquanto a regra que determina seu acrésc
 
 O primeiro recorte não precisa mover toda a persistência. O restante das camadas existentes será identificado como legado em transição, e a conclusão do mini-lab não será apresentada como modularização completa do Core.
 
-Ranking permanece como candidato futuro a uma fronteira própria. Sua eventual extração dependerá de requisitos e métricas que justifiquem o custo operacional.
+No Desafio 1, Ranking permanecia como candidato a uma fronteira própria. No Desafio 2, ganhou um módulo interno; sua eventual extração para serviço continua dependente de requisitos e métricas que justifiquem o custo operacional.
 
 ## 7 ADR-001 Evolução do Core para monólito modular
 
@@ -131,7 +138,7 @@ flowchart LR
     core -->|"JPA e JDBC"| banco
 ```
 
-O diagrama usa o ambiente Docker/HOMOL com PostgreSQL. Os perfis locais e os testes aplicáveis continuam podendo usar H2. Jenkins, Prometheus, Grafana e pgAdmin permanecem na infraestrutura existente; o Desafio 1 não introduz unidades operacionais adicionais. A visão de componentes do Core será detalhada no Desafio 2, acompanhando as fronteiras efetivamente implementadas.
+O diagrama usa o ambiente Docker/HOMOL com PostgreSQL. Os perfis locais e os testes aplicáveis continuam podendo usar H2. Jenkins, Prometheus, Grafana e pgAdmin permanecem na infraestrutura existente; o Desafio 1 não introduz unidades operacionais adicionais. O detalhamento de componentes previsto no Desafio 1 foi acrescentado na seção 13 para o recorte efetivamente implementado no Desafio 2.
 
 ## 9 Mini-lab implementado
 
@@ -300,3 +307,193 @@ A extração de Ranking ou de outra capacidade será revista mediante evidência
 - Material da disciplina: `Exercicio_B1_Architecture_Lab_6_Desafios_Reavaliado.docx`, especialmente regras de entrega e Desafio 1.
 - Exemplo orientativo da professora: `Exemplo_Solucao_Desafio_1_Architecture_Lab_B1.docx`; base da decisão por monólito modular e da organização das 12 seções.
 - [README do projeto](../../README.md), [contrato da API](../API_CONTRACT.md), [rastreabilidade ATDD](../US-e-rastreabilidade.md) e [validação DevOps anterior](../DevOps-validacao.md).
+
+## 13 DESAFIO 2 — ORGANIZAÇÃO INTERNA DO CORE
+
+### 13.1 Cenário e hipótese
+
+Após o Desafio 1, Ranking foi implementado como capacidade interna do mesmo Core.
+A primeira versão funcional fazia `ConsultarRanking` depender diretamente de
+`ConclusaoRepository`, embora `Classificacao` já fosse Java puro. Esse acoplamento
+é o problema específico deste mini-lab, não uma justificativa para reescrever o produto.
+
+**Hipótese:** a leitura do Ranking pode ser substituída por mock/fake por meio de uma
+porta, sem alterar o caso de uso, a regra, o endpoint ou o comportamento integrado.
+O estado anterior é um diff local funcional sobre `317b143`, não um commit separado.
+A [evidência antes/depois](evidencias/desafio-2/dependencias.md) identifica esse limite.
+
+### 13.2 RFs afetados
+
+| RF | Comportamento e relação com a decisão |
+| --- | --- |
+| RF01 — Ranking | Implementado em `GET /api/ranking`. Pontuação é a quantidade de conclusões aprovadas; ordem decrescente, com alunoId crescente no empate. Cada aprovação registrada conta, inclusive no mesmo curso; alunos sem aprovação não aparecem. |
+| RF02 — Conquistas/Gamificação | Preservar aprovação (concluído e nota >= 7), recompensa de +3 cursos e histórico. Ranking lê `aprovado` persistido pelo fluxo existente, sem recalcular a regra ou usar saldo como pontuação. |
+
+O contrato retorna `posicao`, `alunoId`, `nome` e `aprovacoes`, com HTTP 200 e `[]`
+quando não há elegíveis. Sem tabela adicional, filtros ou paginação. Consulte o
+[contrato HTTP](../API_CONTRACT.md). O mini-lab usa Ranking como recorte principal;
+Gamificação não foi reescrita nem totalmente convertida para Ports & Adapters.
+
+### 13.3 RNFs e seleção dos ASRs
+
+| RNF | Referência FURPS+ | Seleção | Efeito arquitetural |
+| --- | --- | --- | --- |
+| Manutenibilidade | Suportabilidade | ASR-04 | Concentrar o conhecimento de persistência no adapter e proteger o acesso por contrato explícito. |
+| Testabilidade | Suportabilidade | ASR-05 | Permitir instanciar o caso de uso com mock/fake sem banco, Spring Data ou inicialização do contexto Spring. |
+| Modificabilidade | Suportabilidade | ASR-06 | Substituir a forma de obter dados sem alterar classificação ou contrato HTTP. |
+| Facilidade de evolução | Suportabilidade | Analisado, sem ASR adicional | Benefício transversal coberto pelos três direcionadores; não justifica um quarto ASR neste desafio. |
+
+A seleção mantém três ASRs. Manutenibilidade trata da localização e proteção das
+dependências; testabilidade trata da execução isolada; modificabilidade trata da
+substituição da fonte. São aspectos relacionados, com consequências verificáveis
+distintas. A matriz cumulativa da seção 3 inclui ASR-01 a ASR-06, preservando os
+três ASRs originais do Desafio 1.
+
+### 13.4 RPCs
+
+| ID | Restrição/premissa | Consequência |
+| --- | --- | --- |
+| RPC-D2-01 | Core permanece Java/Spring Boot | Manter aplicação e integração com o container existentes. |
+| RPC-D2-02 | Regras existentes devem ser reaproveitadas | Preservar `Classificacao`, aprovação, recompensa e contratos. |
+| RPC-D2-03 | Não reescrever o produto inteiro apenas para aplicar um padrão | Limitar a inversão à dependência técnica de leitura do Ranking. |
+| RPC-D2-04 | Manter persistência JPA e banco relacional existentes neste recorte | Reutilizar consulta e schema; PostgreSQL no ambiente completo e H2 nos testes locais. |
+
+RPC-D2-04 é uma restrição de continuidade adotada no contexto do projeto, compatível
+com o legado; não é apresentada como uma nova exigência literal do enunciado.
+Ports & Adapters é a decisão resultante, não uma RPC.
+
+### 13.5 Alternativas e trade-offs
+
+| Alternativa | Benefícios | Custos/riscos | Avaliação |
+| --- | --- | --- | --- |
+| A — Manter acesso direto ao repository JPA | Menos classes, fluxo direto e suficiente para um MVP | Caso de uso conhece persistência; testes isolados precisam lidar com contrato técnico; troca de fonte afeta aplicação | Funcional, mas não protege a dependência que este mini-lab pretende inverter. |
+| B — Ports & Adapters seletivo | Porta explícita, caso de uso testável sem banco, adapter substituível e regra preservada | Interface e adapter adicionais, disciplina de fronteiras; não remove Spring de todo o sistema | Escolhida: custo pequeno e diretamente relacionado aos três ASRs. |
+| C — Reestruturar todo o Core em Hexagonal/Clean | Fronteiras mais abrangentes | Refatoração ampla, regressão e custo desproporcional; uma reescrita motivada somente pelo padrão contraria RPC-D2-03 | Não adotada neste recorte; só caberia com problemas adicionais demonstrados. |
+
+Hexagonal, Clean e Onion são abordagens estruturais que compartilham princípios de
+inversão e proteção do domínio, não tecnologias mutuamente excludentes. A alternativa
+C questiona a amplitude da mudança, não a validade desses princípios.
+
+### 13.6 Decisão
+
+**Adotar Ports & Adapters de forma seletiva nas dependências técnicas que justificam
+inversão, começando pela leitura necessária ao Ranking, sem reestruturar todo o Core.**
+
+`ConsultarRanking` depende de `LeituraRankingPort`, e `JpaRankingAdapter` implementa
+essa porta. O núcleo não depende do adapter; `Classificacao` permanece Java puro.
+A anotação `@Service` permanece no caso de uso por simplicidade de integração;
+`@Transactional(readOnly = true)` fica no adapter. Portanto, trata-se de um recorte
+baseado em Ports & Adapters, não de conversão integral do projeto em Hexagonal.
+
+### 13.7 ADR-002 — Inverter a dependência de persistência do Ranking com Ports & Adapters
+
+| Campo | Registro |
+| --- | --- |
+| Data | 02/11/2026, data da validação técnica local. |
+| Contexto | `ConsultarRanking` conhecia `ConclusaoRepository` e transação Spring; a classificação já era pura. Era necessário substituir a leitura sem modificar regra ou HTTP. |
+| RFs | RF01 Ranking; RF02 Conquistas/Gamificação preservado. |
+| ASRs | ASR-04 Manutenibilidade; ASR-05 Testabilidade; ASR-06 Modificabilidade. |
+| RPCs | RPC-D2-01 a RPC-D2-04: Spring Boot, regras existentes, mudança incremental e continuidade JPA/relacional. |
+| Alternativas | A) Dependência direta; B) Ports & Adapters seletivo; C) Reestruturação ampla do Core. |
+| Decisão | B: introduzir `LeituraRankingPort` e `JpaRankingAdapter`, com injeção da porta no caso de uso. |
+| Consequências positivas | Persistência isolada do caso de uso, testes sem banco, substituição demonstrável e regra/HTTP preservados. |
+| Trade-offs | Mais tipos e uma delegação; exige disciplina e testes de fronteira. `@Service` permanece; o Core e banco continuam compartilhados. |
+| Evidência | `ConsultarRankingTest` (Mockito), `ConsultarRankingFakeTest`, `RankingApiTest` (adapter JPA/H2), `ClassificacaoTest`, `RankingArchitectureTest` e regressão. [Detalhamento](evidencias/desafio-2/dependencias.md). |
+| Estado | Adotado e validado em 02/11/2026; gate PostgreSQL/HOMOL e Jenkins Build #2 aprovado, conforme [validação final](evidencias/desafio-2/validacao.md). Alterações da branch real ainda sem commit; Jenkins executou snapshot temporário. |
+| Gatilhos de revisão | Novas fontes de dados, crescimento de dependências externas ou mudanças recorrentes no contrato de leitura; reavaliar responsabilidades antes de criar novas abstrações. |
+
+### 13.8 C4 Component do Core — recorte Ranking
+
+Esta visão de componentes usa Mermaid e detalha somente o recorte afetado dentro do
+container Core Java/Spring Boot. Porta e regra são elementos internos explicitados
+para tornar a inversão verificável. Não representa novos serviços ou deploys.
+
+```mermaid
+flowchart LR
+    web["Frontend Vue<br/>Consumidor HTTP"]
+    subgraph core["Core Java/Spring Boot — container único"]
+        controller["RankingController<br/>Adapter HTTP: GET /api/ranking"]
+        caso["ConsultarRanking<br/>Caso de uso: consultar()"]
+        regra["Classificacao<br/>Regra Java pura: classificar()"]
+        porta["LeituraRankingPort<br/>Contrato: buscarAprovacoes()"]
+        adapter["JpaRankingAdapter<br/>Leitura transacional"]
+        repo["ConclusaoRepository<br/>Consulta agregada JPA"]
+        controller -->|"consulta"| caso
+        caso -->|"classifica valores"| regra
+        caso -->|"depende / chama contrato"| porta
+        adapter -.->|"implementa"| porta
+        adapter -->|"contarAprovacoesPorAluno()"| repo
+    end
+    banco[("Banco relacional<br/>H2 local / PostgreSQL no ambiente completo")]
+    web -->|"HTTP / JSON"| controller
+    repo -->|"JPA / JDBC"| banco
+```
+
+Setas contínuas indicam uso/chamada; a seta tracejada indica implementação da
+interface. Em execução, Spring injeta o adapter como implementação da porta;
+**a porta não depende do adapter**. `ResumoAprovacoes` transporta os totais de leitura
+e `PosicaoRanking` transporta o resultado; nenhum deles expõe Entity/JPA.
+Gamificação permanece outro recorte do mesmo Core e não foi refatorada neste mini-lab.
+A presença de PostgreSQL no desenho descreve a infraestrutura prevista/existente,
+não uma nova execução validada nesta etapa.
+
+### 13.9 Mini-lab e evidências
+
+A [comparação de dependências](evidencias/desafio-2/dependencias.md) registra:
+
+- Antes: `ConsultarRanking` → `ConclusaoRepository`.
+- Depois: caso de uso → `LeituraRankingPort` ← `JpaRankingAdapter` → repository.
+- Mockito: `@Mock LeituraRankingPort`, `when(...).thenReturn(...)` e `verify(...)`;
+  o caso de uso executa sem JPA e utiliza o contrato de leitura.
+- Fake: implementação em memória produz resultado determinístico com o mesmo caso de uso.
+- Adapter real: cinco testes `RankingApiTest` atravessam Spring, adapter, repository e H2.
+- ArchUnit: classificação/porta limitadas ao núcleo, caso de uso sem persistência/HTTP
+  e núcleo sem dependência do adapter. As três regras de Gamificação foram preservadas.
+
+Mocks não verificam JPQL, mapeamento ou banco. A integração real complementa os testes
+unitários. A substituição por mock/fake demonstra o limite escolhido; não comprova que
+qualquer fonte futura terá custo zero de integração.
+
+### 13.10 Validação técnica registrada
+
+Resultados da execução de **02/11/2026**, anteriores a esta atualização documental:
+
+| Verificação | Resultado |
+| --- | --- |
+| Maven / JUnit | Tests run: 38; Failures: 0; Errors: 0; Skipped: 0; BUILD SUCCESS. |
+| JaCoCo | 31 classes analisadas; 798/798 instruções; 13/13 branches; 169/169 linhas; todos os checks atendidos. |
+| Cobertura | 100% de instruções, branches e linhas das classes analisadas pelo JaCoCo; exclusão existente da classe de inicialização preservada. |
+| Frontend | Oxlint, ESLint e build Vite aprovados; sem mudança nesta refatoração. |
+| Cypress local | Tests: 12; Passing: 12; Failing: 0; Pending: 0; Skipped: 0. |
+| Ambiente E2E | Vue local + API + H2; não é Docker/HOMOL/PostgreSQL. |
+
+Comandos, versões, horários e localização dos relatórios estão na
+[evidência técnica](evidencias/desafio-2/dependencias.md#validação-local-inicial--02112026).
+Esta edição documental não representa uma nova execução dos testes.
+
+**Atualização posterior — gate final:** 38 testes normais e 1 IT PostgreSQL passaram
+no CI e novamente no Jenkins Build #2. O pipeline confirmou lint/build, HOMOL,
+cinco smoke checks e Cypress 12/12 com PostgreSQL. A [validação final](evidencias/desafio-2/validacao.md)
+identifica os artefatos, o snapshot temporário, a tentativa direta de Cypress
+interrompida por timeout e a repetição observada no build aprovado. Os resultados
+locais acima são preservados como etapa anterior, não como prova de HOMOL.
+
+### 13.11 Limites, continuidade e rastreabilidade
+
+**Docker/HOMOL/PostgreSQL/Cypress completo: APROVADO no gate documentado.** O Jenkins
+Build #2 executou um snapshot local temporário; Prometheus/Grafana foram validados
+em execução, sem alteração de suas configurações. Não há ensaio de carga nem
+comprovação de escala para 100.000 usuários. Alunos, Cursos e o restante do Core não
+foram integralmente convertidos para Ports & Adapters.
+
+| Elo | Registro verificável |
+| --- | --- |
+| RF → RNF | RF01 precisa de leitura/classificação evolutiva; RF02 exige preservação de comportamento. |
+| RNF → ASR | ASR-04 limita conhecimento técnico; ASR-05 permite execução isolada; ASR-06 permite substituir a fonte. |
+| ASR + RPC → alternativas | Comparação entre acesso direto, inversão seletiva e mudança ampla sob restrições do legado. |
+| Alternativas → ADR | ADR-002 escolhe a inversão seletiva pelo custo proporcional ao recorte. |
+| ADR → C4 | Caso de uso depende da porta; adapter implementa a porta; Core continua único. |
+| C4 → evidência | Mockito/fake substituem a fonte; integração JPA/H2 e ArchUnit verificam o fluxo real e as dependências. |
+
+Próximos passos: revisão do diff e versionamento/publicação mediante autorização,
+preservando os artefatos locais de evidência. Desafios 3–6 não fazem parte desta entrega.

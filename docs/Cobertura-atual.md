@@ -1,5 +1,11 @@
 # Evidência — cobertura JaCoCo atual
 
+## Desafio 2 — 02/11/2026
+
+O fluxo final confirmou **38 testes normais + 1 IT PostgreSQL**, sem falhas, erros ou testes ignorados. O XML JaCoCo preservado em `artifacts/gate-final/backend/site/jacoco/jacoco.xml` registra **31 classes analisadas, 798/798 instruções, 13/13 branches e 169/169 linhas**: **100% das métricas/classes analisadas pelo JaCoCo atual**. A exclusão preexistente da classe de inicialização foi mantida, sem reduzir limites ou adicionar exclusões.
+
+A [validação final do Desafio 2](arquitetura/evidencias/desafio-2/validacao.md#7-jacoco) identifica os artefatos e o escopo da medição. As seções e a captura abaixo são históricas; não representam os contadores atuais.
+
 ## Mini-lab B1 — 28/10/2026
 
 Após o primeiro recorte modular, `mvnw clean verify` passou com **25 testes**, sem falhas, erros ou testes ignorados. Nas 25 classes analisadas, a cobertura foi de **682/682 instruções, 11/11 branches e 144/144 linhas (100%)**. A exclusão da classe de inicialização e os controles de cobertura integral foram mantidos. Consulte a [validação do Desafio 1](arquitetura/evidencias/desafio-1/validacao.md) para ambiente, comandos, escopo e limitações.
@@ -20,7 +26,7 @@ BUILD SUCCESS
 
 O relatório `target/site/jacoco/index.html` e o CSV `target/site/jacoco/jacoco.csv` apresentaram, nas **25 classes analisadas**:
 
-![Relatório JaCoCo atual com cobertura de 100% nas classes analisadas](evidencias/Cobertura_JaCoCo_Atual.png)
+![Relatório JaCoCo histórico de setembro, com cobertura de 100% nas classes então analisadas](evidencias/Cobertura_JaCoCo_Atual.png)
 
 | Métrica | Coberto | Perdido | Cobertura |
 | --- | ---: | ---: | ---: |
