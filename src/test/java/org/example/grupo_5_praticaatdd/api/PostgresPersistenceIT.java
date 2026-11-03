@@ -50,6 +50,13 @@ class PostgresPersistenceIT {
                 .andExpect(jsonPath("$.historico[0].aprovado").value(false))
                 .andExpect(jsonPath("$.historico[1].aprovado").value(true));
 
+        // Exercita também a porta e o adapter real do Ranking no PostgreSQL.
+        mockMvc.perform(get("/api/ranking"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].alunoId").value(alunoId))
+                .andExpect(jsonPath("$[0].aprovacoes").value(1));
+
         assertEquals(3, jdbcTemplate.queryForObject(
                 "SELECT cursos_adicionais FROM alunos WHERE id = ?", Integer.class, alunoId));
         assertEquals(2, jdbcTemplate.queryForObject(

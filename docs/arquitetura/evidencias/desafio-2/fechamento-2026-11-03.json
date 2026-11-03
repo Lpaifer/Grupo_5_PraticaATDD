@@ -1,0 +1,276 @@
+{
+  "date": "2026-11-03",
+  "timezone": "America/Sao_Paulo",
+  "scope": "Fechamento B1, Desafios 1 e 2. Sem adições ao Desafio 6.",
+  "git_base": "c269fa88c57864dfed19dd258e5a18696757095c",
+  "ranking_published_commit": "688823f",
+  "source_change_under_test": "PostgresPersistenceIT consulta GET /api/ranking após reprovação e aprovação.",
+  "source_fingerprint": {
+    "algorithm": "SHA256 de caminhos Git ordenados + NUL + bytes locais + NUL; documentação excluída",
+    "path_count": 114,
+    "sha256": "2c20193b13fff39b953eeb064a13d4fd8fac684082bb87ad465336d7fdc9f485",
+    "postgres_test_sha256": "bc6336e66df8d5a8269621499fd156474906c8bb6dbe51c93a4742e9e5c63556"
+  },
+  "execution": {
+    "mode": "Docker Compose direto; nenhum job Jenkins disparado nesta execução",
+    "ci_project": "grupo5-b1-ci-20261103",
+    "homol_project": "grupo5-b1-homol-20261103",
+    "backend_command": "./mvnw -B -ntp -Ppostgres-it clean verify",
+    "postgres": "Instâncias descartáveis distintas para CI e HOMOL",
+    "cypress_exit_code": 0,
+    "backend_exit_code": 0
+  },
+  "surefire": {
+    "totals": {
+      "tests": 38,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "suites": [
+      {
+        "name": "org.example.grupo_5_praticaatdd.api.AlunoConclusaoApiTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "report": "backend/surefire-reports/TEST-org.example.grupo_5_praticaatdd.api.AlunoConclusaoApiTest.xml",
+        "sha256": "6c469279d72fa52f4de189b3359a0f4c695ab9582f9ae03668a2c003bf1fe1ea"
+      },
+      {
+        "name": "org.example.grupo_5_praticaatdd.api.CursoApiTest",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "report": "backend/surefire-reports/TEST-org.example.grupo_5_praticaatdd.api.CursoApiTest.xml",
+        "sha256": "d7667ff7c0459dfe0983c0364c28b42c142b360b6e8ebaa4f3e4ebb7ca066e9a"
+      },
+      {
+        "name": "org.example.grupo_5_praticaatdd.api.H2PersistenceTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "report": "backend/surefire-reports/TEST-org.example.grupo_5_praticaatdd.api.H2PersistenceTest.xml",
+        "sha256": "5ec8dec6455a2738770109a059e5c89da9e232cf2be22578903825a6b80acc61"
+      },
+      {
+        "name": "org.example.grupo_5_praticaatdd.api.ObservabilidadeApiTest",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "report": "backend/surefire-reports/TEST-org.example.grupo_5_praticaatdd.api.ObservabilidadeApiTest.xml",
+        "sha256": "0e65877f1f95d0e051c03618552390dff5a79a3abea386132a3718f8fa40e04b"
+      },
+      {
+        "name": "org.example.grupo_5_praticaatdd.api.OpenApiTest",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "report": "backend/surefire-reports/TEST-org.example.grupo_5_praticaatdd.api.OpenApiTest.xml",
+        "sha256": "ac9363555bb6e940f8246997e9e937c9b83c283b62254eda7256ed967825b58b"
+      },
+      {
+        "name": "org.example.grupo_5_praticaatdd.api.RankingApiTest",
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "report": "backend/surefire-reports/TEST-org.example.grupo_5_praticaatdd.api.RankingApiTest.xml",
+        "sha256": "45e6b59b0d7ecafd6968c1174e5f6ac465d6529a993a7fa41376c9390d198d92"
+      },
+      {
+        "name": "org.example.grupo_5_praticaatdd.arquitetura.GamificacaoArchitectureTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "report": "backend/surefire-reports/TEST-org.example.grupo_5_praticaatdd.arquitetura.GamificacaoArchitectureTest.xml",
+        "sha256": "165a3a1ac1eb17676a6c1666bb7fd96b8d45fd572acee2712235274ca3f86374"
+      },
+      {
+        "name": "org.example.grupo_5_praticaatdd.arquitetura.RankingArchitectureTest",
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "report": "backend/surefire-reports/TEST-org.example.grupo_5_praticaatdd.arquitetura.RankingArchitectureTest.xml",
+        "sha256": "affa9c6d9cccd8bae0b4385e620cbbe7aaa515b3669398389bf2169fdea5b05c"
+      },
+      {
+        "name": "org.example.grupo_5_praticaatdd.gamificacao.api.PlataformaGamificacaoTest",
+        "tests": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "report": "backend/surefire-reports/TEST-org.example.grupo_5_praticaatdd.gamificacao.api.PlataformaGamificacaoTest.xml",
+        "sha256": "752e93e9a68b4d9118ecdfe0e370459420831dc28e4a8b71872af0b40075c896"
+      },
+      {
+        "name": "org.example.grupo_5_praticaatdd.Grupo5PraticaAtddApplicationTests",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "report": "backend/surefire-reports/TEST-org.example.grupo_5_praticaatdd.Grupo5PraticaAtddApplicationTests.xml",
+        "sha256": "8113c761c37b0b40f4ac891e7b05e78a0c118a3408eddddde041baa761f08d02"
+      },
+      {
+        "name": "org.example.grupo_5_praticaatdd.ranking.ClassificacaoTest",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "report": "backend/surefire-reports/TEST-org.example.grupo_5_praticaatdd.ranking.ClassificacaoTest.xml",
+        "sha256": "87f66378ed141961a22ed14a7d0fb6c66c2ba04e8e0d8c53c6c10c97c2d1d823"
+      },
+      {
+        "name": "org.example.grupo_5_praticaatdd.ranking.ConsultarRankingFakeTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "report": "backend/surefire-reports/TEST-org.example.grupo_5_praticaatdd.ranking.ConsultarRankingFakeTest.xml",
+        "sha256": "703d236e7324f58375ea184049ad80b383a87c3036223918ae228ea4e2ac0990"
+      },
+      {
+        "name": "org.example.grupo_5_praticaatdd.ranking.ConsultarRankingTest",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "report": "backend/surefire-reports/TEST-org.example.grupo_5_praticaatdd.ranking.ConsultarRankingTest.xml",
+        "sha256": "739c8e4a82349afef05d862b01ef1fc1321d7d2c819dbae5cf7d9c6f03cd031f"
+      },
+      {
+        "name": "org.example.grupo_5_praticaatdd.service.ConclusaoServiceTest",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "report": "backend/surefire-reports/TEST-org.example.grupo_5_praticaatdd.service.ConclusaoServiceTest.xml",
+        "sha256": "de1adf0e41849916db82a1cbdee412a9d35acd7feeada21b4fc927486293c855"
+      }
+    ]
+  },
+  "failsafe": {
+    "totals": {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "suites": [
+      {
+        "name": "org.example.grupo_5_praticaatdd.api.PostgresPersistenceIT",
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "report": "backend/failsafe-reports/TEST-org.example.grupo_5_praticaatdd.api.PostgresPersistenceIT.xml",
+        "sha256": "e3b7fb5c53a5207cdd3e85206ff54a36389e911650576c0671c84bafd4eed365"
+      }
+    ]
+  },
+  "jacoco": {
+    "counters": {
+      "INSTRUCTION": {
+        "covered": 798,
+        "missed": 0
+      },
+      "BRANCH": {
+        "covered": 13,
+        "missed": 0
+      },
+      "LINE": {
+        "covered": 169,
+        "missed": 0
+      },
+      "COMPLEXITY": {
+        "covered": 88,
+        "missed": 0
+      },
+      "METHOD": {
+        "covered": 81,
+        "missed": 0
+      },
+      "CLASS": {
+        "covered": 31,
+        "missed": 0
+      }
+    },
+    "excluded_class": "Grupo5PraticaAtddApplication",
+    "report": "backend/site/jacoco/jacoco.xml",
+    "sha256": "5919c89660747abdc9acf214c80a2ac18e7d0df1bb7e038cca51e8fa981735cc"
+  },
+  "frontend": {
+    "lint": "PASS",
+    "build": "PASS"
+  },
+  "smoke": {
+    "passed": 5,
+    "checks": [
+      "OK: API e banco saudáveis",
+      "OK: Frontend e proxy Nginx",
+      "OK: Métricas JVM e HTTP disponíveis",
+      "OK: Prometheus coletando a API",
+      "OK: Grafana com datasource e dashboard provisionados"
+    ]
+  },
+  "cypress": {
+    "totals": {
+      "tests": 12,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "suites": [
+      {
+        "name": "Mocha Tests",
+        "tests": 10,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "report": "cypress/reports/e2e-4e2401a1945490e5fb85a096db472f0d.xml",
+        "sha256": "415a1cfc3aa793c61b9bf9de89b140fd933fe112d05d328d63b8aa23633f8881"
+      },
+      {
+        "name": "Mocha Tests",
+        "tests": 2,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "report": "cypress/reports/e2e-4f087d2e352feccbb784cac877273b12.xml",
+        "sha256": "b7a68875d37ffcbad81664e2e6960cdd75c09e88e70dc3f504b71aea72884c89"
+      }
+    ]
+  },
+  "artifacts_local_directory": "artifacts/fechamento-desafio-2-20261103",
+  "logs": [
+    {
+      "file": "grupo5-b1-fechamento-ci.log",
+      "sha256": "00d7c3210828f9b92a45e99139a9472e7474e812034168b041ad7e670e1b63a5"
+    },
+    {
+      "file": "grupo5-b1-fechamento-cypress.log",
+      "sha256": "02bd0094f44ffed10493bdd89a8817c0f468cdad9f130a183fe9a24b510f2f6d"
+    },
+    {
+      "file": "grupo5-b1-fechamento-frontend.log",
+      "sha256": "98663e4a5497f581a3285811c406c22856fa26c24d3305021fc6e64700f57da4"
+    },
+    {
+      "file": "grupo5-b1-fechamento-smoke.log",
+      "sha256": "abd1cc3b9267411204cc138f35ee718cf8f068bf96c816206f86938bf5edde5f"
+    }
+  ],
+  "limits": [
+    "Arquivos completos locais são ignorados pelo Git; este resumo preserva totais e hashes.",
+    "O Jenkins Build #2 de 02/11 é histórico e usou snapshot temporário, não a revisão atual.",
+    "Não houve ensaio de carga; não se comprova capacidade para 100.000 usuários.",
+    "Ports & Adapters aplicado seletivamente à leitura do Ranking."
+  ]
+}

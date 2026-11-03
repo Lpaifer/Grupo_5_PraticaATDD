@@ -1,12 +1,14 @@
 # Desafio 2 — validação final da organização interna do Core
 
+> **Registro histórico de 02/11/2026.** A implementação foi posteriormente publicada em `688823f` e integrada à `master` em `c269fa8`. O fechamento atual, com nova execução Docker em 03/11 e verificação explícita do Ranking no IT PostgreSQL, está no [README principal](../../../../README.md#evolução-arquitetural-b1) e no [resumo de resultados](fechamento-2026-11-03.json). O Jenkins abaixo refere-se ao snapshot temporário histórico; não houve nova execução do job em 03/11. As pendências de commit descritas neste relato retratam a data original.
+
 ## 1. Escopo e identificação
 
 Evidências de 02/11/2026, conferidas no código, relatórios XML e logs locais. Este documento registra resultados já executados; sua redação não representa uma nova execução do pipeline.
 
 - Branch real: `Leonardo-B1-D2`.
 - HEAD real durante o gate e a revisão: `317b143a96f1bcf3f1fd74f839f98a991235c711`.
-- Ranking e Desafio 2 permanecem como alterações locais, ainda sem commit oficial.
+- Na data desse gate, Ranking e Desafio 2 eram alterações locais, ainda sem commit oficial; a publicação posterior está identificada na nota acima.
 - Mini-lab: **Ports & Adapters aplicado seletivamente à dependência de leitura do Ranking**.
 - Escopo: RF01 Ranking e preservação de RF02 Conquistas/Gamificação. Não inclui os Desafios 3–6 nem conversão integral do sistema para Hexagonal.
 
@@ -26,7 +28,7 @@ Conferência contra `Exercicio_B1_Architecture_Lab_6_Desafios_Reavaliado.docx`, 
 | C4 Component | Seção 13.8: fronteira do Core, controller, caso de uso, regra, porta, adapter, repository e banco | Atendido |
 | Microsolução | Classificação pura; mesma consulta executada com adapter JPA, mock e fake | Atendido |
 | Evidência | Testes, cobertura, integração PostgreSQL, HOMOL e Jenkins discriminados abaixo | Atendido |
-| Git | Registro cumulativo e evidências preparados no workspace; commit/publicação ainda não realizados | Pendente somente de versionamento autorizado |
+| Git | No gate histórico, registro e evidências estavam no workspace; publicação posterior em `688823f`, merge em `c269fa8` | Implementação publicada após o gate |
 
 A matriz cumulativa contém os três ASRs do Desafio 1 e os três do Desafio 2; não são seis ASRs selecionados para uma única decisão.
 
