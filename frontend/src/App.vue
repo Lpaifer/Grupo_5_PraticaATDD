@@ -1,5 +1,7 @@
 <script setup>
   import { ref, computed, onMounted } from 'vue'
+  import RankingPanel from './components/RankingPanel.vue'
+  const atualizacaoRanking = ref(0)
 
   import {
     criarAluno,
@@ -142,6 +144,7 @@
       })
 
       resultado.value = resposta
+      atualizacaoRanking.value++
 
       nota.value = ''
       concluido.value = false
@@ -395,6 +398,7 @@
         Nenhum resultado processado ainda.
       </p>
     </section>
+    <RankingPanel :atualizacao="atualizacaoRanking" />
   </main>
   <footer class="footer">
     <div class="footer-content">

@@ -20,12 +20,12 @@ O `Jenkinsfile` suporta agentes Windows (`bat`) e Linux/macOS (`sh`). Todas as f
 
 | Etapa | Critério de aprovação | Evidência |
 |---|---|---|
-| Backend | 25 testes da suíte normal e um IT PostgreSQL aprovados após o mini-lab B1 | Surefire/Failsafe, JAR |
+| Backend | Estado validado até o Desafio 2: 38 testes normais e um IT PostgreSQL aprovados | Surefire/Failsafe, JAR |
 | Cobertura | Zero instruções, branches ou linhas descobertos nas classes analisadas | JaCoCo HTML/CSV/XML |
 | Frontend | Oxlint/ESLint sem erros e build Vite concluído | Console do build |
 | Deploy | Banco, API, frontend, Prometheus e Grafana prontos | Estado dos serviços e logs |
 | Observabilidade | API UP, proxy funcional, métricas presentes, `up=1`, datasource/dashboard provisionados | Smoke checks |
-| E2E | Dez cenários Cypress aprovados | JUnit XML, vídeo e screenshots de falhas |
+| E2E | Estado validado até o Desafio 2: 12 cenários Cypress aprovados (10 Gamificação + 2 Ranking) | JUnit XML, vídeo e screenshots de falhas |
 
 O parâmetro `DEPLOY_HOMOL=false` executa CI e gera as imagens, sem implantação/testes de homologação. HOMOL usa um lock para impedir deployments simultâneos entre jobs no mesmo Jenkins. As imagens têm tag `BUILD_NUMBER-commit`, e relatórios antigos são removidos antes do checkout. O job guarda 15 builds e artefatos dos últimos 10.
 
@@ -126,7 +126,7 @@ docker cp grupo5-ci-backend:/workspace/target/. artifacts/backend/
 docker compose -p grupo5-ci-local -f docker-compose.ci.yml down --volumes --remove-orphans
 ```
 
-No PowerShell, crie a pasta com `New-Item -ItemType Directory -Force artifacts/backend`; no Unix, `mkdir -p artifacts/backend`. Essa limpeza remove apenas o projeto descartável `grupo5-ci-local`. O comando Maven sem o perfil (`.\mvnw.cmd verify` ou `./mvnw verify`) continua funcionando sem Docker e executa os 25 testes normais após o mini-lab B1.
+No PowerShell, crie a pasta com `New-Item -ItemType Directory -Force artifacts/backend`; no Unix, `mkdir -p artifacts/backend`. Essa limpeza remove apenas o projeto descartável `grupo5-ci-local`. O comando Maven sem o perfil (`.\mvnw.cmd verify` ou `./mvnw verify`) continua funcionando sem Docker e executa os 38 testes normais no estado validado do Desafio 2.
 
 ## Executar HOMOL sem Jenkins
 
@@ -167,7 +167,7 @@ Em Prometheus, consulte `up{job="grupo5-api"}`: o valor esperado é `1`. As regr
 
 ## Fontes técnicas
 
-A [validação local de 12/10/2026](DevOps-validacao.md) registra os resultados e os artefatos gerados.
+A [validação local de 12/10/2026](DevOps-validacao.md) registra os resultados históricos e os artefatos gerados. A [validação final do Desafio 2 em 02/11/2026](arquitetura/evidencias/desafio-2/validacao.md) registra o gate posterior, incluindo Jenkins Build #2 sobre snapshot temporário, 39 execuções backend e Cypress 12/12. Esse snapshot não é commit oficial da branch real.
 
 A [validação do mini-lab B1 em 28/10/2026](arquitetura/evidencias/desafio-1/validacao.md) registra a execução direta dos comandos de CI/HOMOL após a modularização: 25 testes normais, um IT PostgreSQL e dez cenários Cypress aprovados, com cobertura integral e smoke checks. O job Jenkins não foi disparado nessa execução.
 

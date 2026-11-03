@@ -406,3 +406,19 @@ Responsável por:
 - histórico de conclusões;
 - validações de negócio;
 - retorno dos JSONs esperados pelo frontend.
+
+## Ranking — GET /api/ranking
+
+Retorna HTTP 200 e uma lista ordenada de objetos com `posicao` (inteiro a partir de 1),
+`alunoId`, `nome` e `aprovacoes` (quantidade de conclusões aprovadas).
+A ordem é aprovações decrescente, depois alunoId crescente. Somente alunos com
+aprovações participam; sem aprovações, retorna `[]`. Cada tentativa aprovada conta,
+inclusive repetições no mesmo curso. A consulta usa o resultado `aprovado` persistido
+pelo fluxo existente (concluído e nota >= 7), sem recalcular recompensa ou usar saldo
+como pontuação. Não há filtros, paginação ou tabela adicional.
+
+O módulo `ranking` mantém classificação Java pura em `internal` e contratos imutáveis
+em `api`. `ConsultarRanking` mantém a anotação Spring `@Service`, mas consulta a porta
+`LeituraRankingPort`. O `JpaRankingAdapter` implementa essa porta usando o repository
+existente. A [evidência do Desafio 2](arquitetura/evidencias/desafio-2/dependencias.md)
+registra a substituição por Mockito/fake sem alterar este contrato HTTP.
